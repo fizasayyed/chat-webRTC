@@ -5,40 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const Chat = () => {
-  const [messages, setMessages] = useState([
-    { text: "Hi, how can I help you today?", user: "agent" },
-    { text: "Hey, I'm having trouble with my account.", user: "me" },
-    { text: "What seems to be the problem?", user: "agent" },
-    { text: "I can't log in.", user: "me" },
-  ]);
-  const [input, setInput] = useState("");
-  // let socket;
-
-  // useEffect(() => {
-  //   socket = new WebSocket("ws://localhost:8080");
-
-  //   socket.onmessage = (event) => {
-  //     setMessages((prevMessages) => [
-  //       ...prevMessages,
-  //       { text: event.data, user: "agent" },
-  //     ]);
-  //   };
-
-  //   return () => {
-  //     socket.close();
-  //   };
-  // }, []);
-
-  // const sendMessage = () => {
-  //   if (input.trim()) {
-  //     setMessages((prevMessages) => [
-  //       ...prevMessages,
-  //       { text: input, user: "me" },
-  //     ]);
-  //     socket.send(input);
-  //     setInput("");
-  //   }
-  // };
 
   return (
     <div className="max-w-sm mx-auto bg-white shadow-md rounded-lg overflow-hidden">
@@ -72,17 +38,13 @@ const Chat = () => {
         className="p-4 border-t border-gray-200 overflow-y-auto"
         style={{ height: "300px" }}
       >
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`flex mb-2 ${message.user === "me" ? "justify-end" : ""
-              }`}
+
+        <div
+          className={`flex mb-2 ${message.user === "me" ? "justify-end" : ""
+            }
           >
             <div
-              className={`rounded-lg p-2 max-w-xs ${message.user === "me"
-                ? "bg-purple-600 text-white"
-                : "bg-gray-100 text-gray-900"
-                }`}
+              className={"rounded-lg p-2 max-w-xs bg-purple-600 text-white"}
             >
               {message.text}
             </div>

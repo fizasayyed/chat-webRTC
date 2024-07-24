@@ -1,0 +1,19 @@
+{
+  "name": "webrtc",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fiza Sayyed",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "http": "^0.0.1-security",
+    "nodemon": "^3.1.4",
+    "socket.io": "^4.7.5"
+  }
+}
