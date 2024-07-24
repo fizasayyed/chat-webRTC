@@ -134,10 +134,10 @@ export default function WebRTC() {
 
                 {connected && (
                     <div className="w-full mt-4 relative">
-                        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('/images/image.jpg')`, height: '70vh' }}>
+                        <div className="absolute inset-0 bg-cover bg-center rounded-md" style={{ backgroundImage: `url('/images/image.jpg')`, height: '70vh' }}>
                             <div className="relative z-10 w-full h-full flex flex-col">
                                 <div className="flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg">
-                                    <div className="p-4 flex items-center justify-between bg-black bg-opacity-10 rounded-t-lg">
+                                    <div className="p-3.5 flex items-center justify-between bg-black bg-opacity-10 rounded-t-lg">
                                         <h2 className="text-black">Chat</h2>
                                         <Button
                                             className="bg-black text-white px-4 py-2 rounded"
@@ -164,7 +164,7 @@ export default function WebRTC() {
                                         ))}
                                     </div>
                                 </div>
-                                <div className="flex items-center p-2 bg-white bg-opacity-20 border-t border-gray-300">
+                                <div className="flex items-center p-3.5 bg-white bg-opacity-20 border-t border-gray-300">
                                     <input
                                         type="text"
                                         value={newMessage}
