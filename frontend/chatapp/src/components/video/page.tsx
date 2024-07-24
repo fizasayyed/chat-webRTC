@@ -1,8 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import { Button } from '../ui/button';
 import VideocamIcon from '@mui/icons-material/Videocam';
+import SendIcon from '@mui/icons-material/Send';
 
 export default function WebRTC() {
     const [messages, setMessages] = useState([]);
@@ -124,7 +126,7 @@ export default function WebRTC() {
 
                 {!connected && (
                     <div className="space-y-4 w-full max-w-xs">
-                        <Button className="w-full bg-black text-white py-2 rounded-full" onClick={() => setConnected(true)}>
+                        <Button className="w-full bg-black text-white py-2" onClick={() => setConnected(true)}>
                             Connect
                         </Button>
                     </div>
@@ -135,7 +137,7 @@ export default function WebRTC() {
                         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('/images/image.jpg')`, height: '70vh' }}>
                             <div className="relative z-10 w-full h-full flex flex-col">
                                 <div className="flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg">
-                                    <div className="p-4 flex items-center justify-between bg-white bg-opacity-10 rounded-t-lg">
+                                    <div className="p-4 flex items-center justify-between bg-black bg-opacity-10 rounded-t-lg">
                                         <h2 className="text-black">Chat</h2>
                                         <Button
                                             className="bg-black text-white px-4 py-2 rounded"
@@ -144,8 +146,9 @@ export default function WebRTC() {
                                                 startMedia();
                                                 initiateCall();
                                             }}
+
                                         >
-                                            Video
+                                            <VideocamIcon />
                                         </Button>
                                     </div>
                                     <div className="space-y-2">
@@ -167,10 +170,10 @@ export default function WebRTC() {
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         placeholder="Type a message..."
-                                        className="flex-grow bg-opacity-30 text-black px-2 py-1.5 rounded backdrop-blur-lg border border-gray-300"
+                                        className="flex-grow bg-opacity-30 text-black px-2 py-2 rounded backdrop-blur-lg border border-gray-300"
                                     />
                                     <Button className="bg-black text-white px-4 ml-2 rounded" onClick={handleSendMessage}>
-                                        Send
+                                        <SendIcon />
                                     </Button>
 
                                 </div>
