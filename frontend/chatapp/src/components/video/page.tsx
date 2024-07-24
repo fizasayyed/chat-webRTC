@@ -1,10 +1,14 @@
-"use client"
+"use client";
 import { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
+import { Button } from '../ui/button';
+import VideocamIcon from '@mui/icons-material/Videocam';
 
 export default function WebRTC() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [connected, setConnected] = useState(false); // Manages connection status
+    const [videoStarted, setVideoStarted] = useState(false); // Manages video call status
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
     const socketRef = useRef(null);
@@ -13,9 +17,9 @@ export default function WebRTC() {
 
     useEffect(() => {
         // Initialize socket connection
-        socketRef.current = io.connect('http://localhost:4000'); // Use the signaling server's address
+        socketRef.current = io.connect('http://localhost:4000');
 
-        // Set up event listeners for WebRTC
+        // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
         socketRef.current.on('candidate', handleNewICECandidateMsg);
@@ -23,8 +27,6 @@ export default function WebRTC() {
         socketRef.current.on('message', (message) => {
             setMessages(prevMessages => [...prevMessages, message]);
         });
-        // Get local media
-        startMedia();
 
         return () => {
             socketRef.current.disconnect();
@@ -35,6 +37,7 @@ export default function WebRTC() {
         try {
             localStreamRef.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             localVideoRef.current.srcObject = localStreamRef.current;
+            createPeerConnection(); // Setup peer connection when media is obtained
         } catch (error) {
             console.error('Error accessing media devices.', error);
         }
@@ -60,10 +63,9 @@ export default function WebRTC() {
         });
     };
 
-    const call = async () => {
-        createPeerConnection();
-
+    const initiateCall = async () => {
         try {
+            if (!pcRef.current) createPeerConnection();
             const offer = await pcRef.current.createOffer();
             await pcRef.current.setLocalDescription(offer);
             socketRef.current.emit('offer', offer);
@@ -110,27 +112,75 @@ export default function WebRTC() {
     };
 
     return (
-        <div>
-            <h1>WebRTC Video Chat</h1>
-            <video ref={localVideoRef} autoPlay muted></video>
-            <video ref={remoteVideoRef} autoPlay></video>
-            <div>
-                <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type a message..."
-                />
-                <button onClick={handleSendMessage}>Send</button>
-            </div>
-            <div>
-                <h2>Chat</h2>
-                <div>
-                    {messages.map((msg, index) => (
-                        <p key={index}>{msg}</p>
-                    ))}
-                </div>
-            </div>
-        </div>
+        <div className="min-h-screen flex flex-col items-center bg-gray-100">
+            <header className="bg-black text-white w-full py-4 flex justify-center">
+                <h1 className="text-lg">Meet</h1>
+            </header>
+            <main className="flex-grow flex flex-col items-center py-6 px-4">
+                <p className="text-center mb-8">Connect with your friends through chat or video call.</p>
+
+                <video ref={localVideoRef} autoPlay muted className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
+                <video ref={remoteVideoRef} autoPlay className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
+
+                {!connected && (
+                    <div className="space-y-4 w-full max-w-xs">
+                        <Button className="w-full bg-black text-white py-2 rounded-full" onClick={() => setConnected(true)}>
+                            Connect
+                        </Button>
+                    </div>
+                )}
+
+                {connected && (
+                    <div className="w-full mt-4 relative">
+                        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('/images/image.jpg')`, height: '70vh' }}>
+                            <div className="relative z-10 w-full h-full flex flex-col">
+                                <div className="flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg">
+                                    <div className="p-4 flex items-center justify-between bg-white bg-opacity-10 rounded-t-lg">
+                                        <h2 className="text-black">Chat</h2>
+                                        <Button
+                                            className="bg-black text-white px-4 py-2 rounded"
+                                            onClick={() => {
+                                                setVideoStarted(true);
+                                                startMedia();
+                                                initiateCall();
+                                            }}
+                                        >
+                                            Video
+                                        </Button>
+                                    </div>
+                                    <div className="space-y-2">
+                                        {messages.map((msg, index) => (
+                                            <div
+                                                key={index}
+                                                className={`flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'} mb-2`}
+                                            >
+                                                <p className="bg-white bg-opacity-90 text-black p-3 rounded-lg shadow-sm max-w-xs">
+                                                    {msg}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="flex items-center p-2 bg-white bg-opacity-20 border-t border-gray-300">
+                                    <input
+                                        type="text"
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        placeholder="Type a message..."
+                                        className="flex-grow bg-opacity-30 text-black px-2 py-1.5 rounded backdrop-blur-lg border border-gray-300"
+                                    />
+                                    <Button className="bg-black text-white px-4 ml-2 rounded" onClick={handleSendMessage}>
+                                        Send
+                                    </Button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+                }
+            </main >
+        </div >
     );
+
 }
