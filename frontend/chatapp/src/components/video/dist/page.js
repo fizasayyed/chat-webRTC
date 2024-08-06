@@ -76,6 +76,9 @@ function WebRTC() {
             socketRef.current.disconnect();
         };
     }, []);
+    react_1.useEffect(function () {
+        scrollToBottom();
+    }, [messages]);
     var startMedia = function () { return __awaiter(_this, void 0, void 0, function () {
         var _a, error_1;
         return __generator(this, function (_b) {
@@ -202,8 +205,8 @@ function WebRTC() {
             }
         });
     }); };
-    var handleSendMessage = function (e) {
-        if (e.key === 'Enter' && newMessage.trim()) {
+    var handleSendMessage = function () {
+        if (newMessage.trim()) {
             var message_1 = { text: newMessage, sender: socketRef.current.id };
             socketRef.current.emit('message', message_1);
             setMessages(function (prevMessages) { return __spreadArrays(prevMessages, [message_1]); });
@@ -228,8 +231,8 @@ function WebRTC() {
             connected && (React.createElement("div", { className: "w-full mt-4 relative" },
                 React.createElement("div", { className: "absolute inset-0 bg-cover bg-center rounded-md", style: { backgroundImage: "url('/images/image.jpg')", height: '70vh' } },
                     React.createElement("div", { className: "relative z-10 w-full h-full flex flex-col" },
-                        React.createElement("div", { className: "flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg" },
-                            React.createElement("div", { className: "p-3.5 flex items-center justify-between bg-black bg-opacity-10 rounded-t-lg" },
+                        React.createElement("div", { className: "flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg scrollbar scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100" },
+                            React.createElement("div", { className: "px-2.5 py-2 flex items-center justify-between bg-black bg-opacity-10 rounded-lg sticky top-0" },
                                 React.createElement("h2", { className: "text-black" }, "Chat"),
                                 React.createElement(button_1.Button, { className: "bg-white text-white px-4 py-2 rounded " + (videoStarted ? 'bg-red-500' : ''), onClick: function () {
                                         if (videoStarted) {
@@ -252,8 +255,11 @@ function WebRTC() {
                                 React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }),
                                 React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }))),
                         React.createElement("div", { className: "flex items-center p-3.5 bg-white bg-opacity-20 border-t border-gray-300" },
-                            React.createElement("input", { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-2 py-2 rounded backdrop-blur-lg border border-gray-300", onKeyDown: handleSendMessage }),
-                            React.createElement(button_1.Button, { className: "bg-white text-white px-4 ml-2 rounded", value: newMessage, onClick: handleSendMessage },
+                            React.createElement("input", { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-2 py-2 rounded backdrop-blur-lg border border-gray-300", onKeyDown: function (e) {
+                                    if (e.key === "Enter")
+                                        handleSendMessage();
+                                } }),
+                            React.createElement(button_1.Button, { className: "bg-white text-white px-4 ml-2 rounded", onClick: handleSendMessage },
                                 React.createElement(image_1["default"], { src: "/images/message.png", alt: "video camera", height: "20", width: "20" }))))))))));
 }
 exports["default"] = WebRTC;

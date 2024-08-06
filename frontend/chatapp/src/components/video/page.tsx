@@ -36,6 +36,10 @@ export default function WebRTC() {
         };
     }, []);
 
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
     const startMedia = async () => {
         try {
             localStreamRef.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -106,8 +110,8 @@ export default function WebRTC() {
         }
     };
 
-    const handleSendMessage = (e) => {
-        if (e.key === 'Enter' && newMessage.trim()) {
+    const handleSendMessage = () => {
+        if (newMessage.trim()) {
             const message = { text: newMessage, sender: socketRef.current.id };
             socketRef.current.emit('message', message);
             setMessages(prevMessages => [...prevMessages, message]);
@@ -145,8 +149,8 @@ export default function WebRTC() {
                     <div className="w-full mt-4 relative">
                         <div className="absolute inset-0 bg-cover bg-center rounded-md" style={{ backgroundImage: `url('/images/image.jpg')`, height: '70vh' }}>
                             <div className="relative z-10 w-full h-full flex flex-col">
-                                <div className="flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg">
-                                    <div className="p-3.5 flex items-center justify-between bg-black bg-opacity-10 rounded-t-lg">
+                                <div className="flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg scrollbar scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
+                                    <div className="px-2.5 py-2 flex items-center justify-between bg-black bg-opacity-10 rounded-lg sticky top-0">
                                         <h2 className="text-black">Chat</h2>
                                         <Button
                                             className={`bg-white text-white px-4 py-2 rounded ${videoStarted ? 'bg-red-500' : ''}`}
@@ -189,9 +193,11 @@ export default function WebRTC() {
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         placeholder="Type a message..."
                                         className="flex-grow bg-opacity-30 text-black px-2 py-2 rounded backdrop-blur-lg border border-gray-300"
-                                        onKeyDown={handleSendMessage}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") handleSendMessage();
+                                        }}
                                     />
-                                    <Button className="bg-white text-white px-4 ml-2 rounded" value={newMessage} onClick={handleSendMessage}>
+                                    <Button className="bg-white text-white px-4 ml-2 rounded" onClick={handleSendMessage}>
                                         <Image src="/images/message.png" alt="video camera" height="20" width="20" />
                                     </Button>
                                 </div>
