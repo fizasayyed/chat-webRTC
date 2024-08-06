@@ -10,7 +10,7 @@ const server = http.createServer(app);
 
 const io = socketIO(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://192.168.5.183:3000",
     methods: ["GET", "POST"],
     allowedHeaders: "*",
   },
@@ -34,9 +34,13 @@ io.on("connection", (socket) => {
 
   // Chat functionality
   socket.on("message", (message) => {
-    console.log("Received message: ", message);
+    const messageWithSender = {
+      text: message.text,
+      sender: socket.id, // Include sender information
+    };
+    console.log("Received message: ", messageWithSender);
     // Broadcast the message to all other connected clients
-    socket.broadcast.emit("message", message);
+    socket.broadcast.emit("message", messageWithSender);
   });
 
   socket.on("disconnect", () => {
@@ -44,6 +48,9 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(4000, () => {
-  console.log("Server is listening on port 4000");
+const HOST = "192.168.5.183";
+const PORT = 4000;
+
+server.listen(PORT, HOST, () => {
+  console.log(`Server is listening on http://${HOST}:${PORT}`);
 });
