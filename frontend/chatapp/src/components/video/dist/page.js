@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -51,20 +52,24 @@ var image_1 = require("next/image");
 function WebRTC() {
     var _this = this;
     var _a = react_1.useState([]), messages = _a[0], setMessages = _a[1];
-    var _b = react_1.useState(""), newMessage = _b[0], setNewMessage = _b[1];
-    var _c = react_1.useState(false), connected = _c[0], setConnected = _c[1];
-    var _d = react_1.useState(false), videoStarted = _d[0], setVideoStarted = _d[1];
+    var _b = react_1.useState(''), newMessage = _b[0], setNewMessage = _b[1];
+    var _c = react_1.useState(false), connected = _c[0], setConnected = _c[1]; // connection status
+    var _d = react_1.useState(false), videoStarted = _d[0], setVideoStarted = _d[1]; // video call status
     var localVideoRef = react_1.useRef(null);
     var remoteVideoRef = react_1.useRef(null);
     var socketRef = react_1.useRef(null);
-    var pcRef = react_1.useRef(null);
+    var peerRef = react_1.useRef(null);
     var localStreamRef = react_1.useRef(null);
+    var messagesEndRef = react_1.useRef(null);
+    var _e = react_1.useState(false), isHost = _e[0], setIsHost = _e[1]; // To identify if the client is a host
     react_1.useEffect(function () {
-        socketRef.current = socket_io_client_1["default"].connect("http://localhost:4000");
-        socketRef.current.on("offer", handleReceiveOffer);
-        socketRef.current.on("answer", handleReceiveAnswer);
-        socketRef.current.on("candidate", handleNewICECandidateMsg);
-        socketRef.current.on("message", function (message) {
+        // Initialize socket connection
+        socketRef.current = socket_io_client_1["default"].connect('http://192.168.5.183:4000');
+        // Set up event listeners for WebRTC signaling
+        socketRef.current.on('offer', handleReceiveOffer);
+        socketRef.current.on('answer', handleReceiveAnswer);
+        socketRef.current.on('candidate', handleNewICECandidateMsg);
+        socketRef.current.on('message', function (message) {
             setMessages(function (prevMessages) { return __spreadArrays(prevMessages, [message]); });
         });
         return function () {
@@ -78,37 +83,34 @@ function WebRTC() {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
                     _a = localStreamRef;
-                    return [4 /*yield*/, navigator.mediaDevices.getUserMedia({
-                            video: true,
-                            audio: true
-                        })];
+                    return [4 /*yield*/, navigator.mediaDevices.getUserMedia({ video: true, audio: true })];
                 case 1:
                     _a.current = _b.sent();
                     localVideoRef.current.srcObject = localStreamRef.current;
-                    createPeerConnection();
+                    createPeerConnection(); // Setup peer connection when media is obtained
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _b.sent();
-                    console.error("Error accessing media devices.", error_1);
+                    console.error('Error accessing media devices.', error_1);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }
         });
     }); };
     var createPeerConnection = function () {
-        pcRef.current = new RTCPeerConnection({
-            iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+        peerRef.current = new RTCPeerConnection({
+            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
         });
-        pcRef.current.onicecandidate = function (event) {
+        peerRef.current.onicecandidate = function (event) {
             if (event.candidate) {
-                socketRef.current.emit("candidate", event.candidate);
+                socketRef.current.emit('candidate', event.candidate);
             }
         };
-        pcRef.current.ontrack = function (event) {
+        peerRef.current.ontrack = function (event) {
             remoteVideoRef.current.srcObject = event.streams[0];
         };
         localStreamRef.current.getTracks().forEach(function (track) {
-            pcRef.current.addTrack(track, localStreamRef.current);
+            peerRef.current.addTrack(track, localStreamRef.current);
         });
     };
     var initiateCall = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -117,19 +119,19 @@ function WebRTC() {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 3, , 4]);
-                    if (!pcRef.current)
+                    if (!peerRef.current)
                         createPeerConnection();
-                    return [4 /*yield*/, pcRef.current.createOffer()];
+                    return [4 /*yield*/, peerRef.current.createOffer()];
                 case 1:
                     offer = _a.sent();
-                    return [4 /*yield*/, pcRef.current.setLocalDescription(offer)];
+                    return [4 /*yield*/, peerRef.current.setLocalDescription(offer)];
                 case 2:
                     _a.sent();
-                    socketRef.current.emit("offer", offer);
+                    socketRef.current.emit('offer', offer);
                     return [3 /*break*/, 4];
                 case 3:
                     error_2 = _a.sent();
-                    console.error("Error creating offer.", error_2);
+                    console.error('Error creating offer.', error_2);
                     return [3 /*break*/, 4];
                 case 4: return [2 /*return*/];
             }
@@ -140,25 +142,25 @@ function WebRTC() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!pcRef.current)
+                    if (!peerRef.current)
                         createPeerConnection();
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 5, , 6]);
-                    return [4 /*yield*/, pcRef.current.setRemoteDescription(offer)];
+                    return [4 /*yield*/, peerRef.current.setRemoteDescription(offer)];
                 case 2:
                     _a.sent();
-                    return [4 /*yield*/, pcRef.current.createAnswer()];
+                    return [4 /*yield*/, peerRef.current.createAnswer()];
                 case 3:
                     answer = _a.sent();
-                    return [4 /*yield*/, pcRef.current.setLocalDescription(answer)];
+                    return [4 /*yield*/, peerRef.current.setLocalDescription(answer)];
                 case 4:
                     _a.sent();
-                    socketRef.current.emit("answer", answer);
+                    socketRef.current.emit('answer', answer);
                     return [3 /*break*/, 6];
                 case 5:
                     error_3 = _a.sent();
-                    console.error("Error handling offer.", error_3);
+                    console.error('Error handling offer.', error_3);
                     return [3 /*break*/, 6];
                 case 6: return [2 /*return*/];
             }
@@ -170,13 +172,13 @@ function WebRTC() {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, pcRef.current.setRemoteDescription(answer)];
+                    return [4 /*yield*/, peerRef.current.setRemoteDescription(answer)];
                 case 1:
                     _a.sent();
                     return [3 /*break*/, 3];
                 case 2:
                     error_4 = _a.sent();
-                    console.error("Error handling answer.", error_4);
+                    console.error('Error handling answer.', error_4);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }
@@ -188,70 +190,70 @@ function WebRTC() {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, pcRef.current.addIceCandidate(candidate)];
+                    return [4 /*yield*/, peerRef.current.addIceCandidate(candidate)];
                 case 1:
                     _a.sent();
                     return [3 /*break*/, 3];
                 case 2:
                     error_5 = _a.sent();
-                    console.error("Error adding received ICE candidate.", error_5);
+                    console.error('Error adding received ICE candidate.', error_5);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }
         });
     }); };
-    var handleSendMessage = function () {
-        if (newMessage.trim()) {
-            var message = { text: newMessage, sender: "Me" };
-            socketRef.current.emit("message", message.text);
-            setMessages(function (prevMessages) { return __spreadArrays(prevMessages, ["Me: " + newMessage]); });
-            setNewMessage("");
+    var handleSendMessage = function (e) {
+        if (e.key === 'Enter' && newMessage.trim()) {
+            var message_1 = { text: newMessage, sender: socketRef.current.id };
+            socketRef.current.emit('message', message_1);
+            setMessages(function (prevMessages) { return __spreadArrays(prevMessages, [message_1]); });
+            setNewMessage('');
         }
     };
-    var toggleVideo = function () {
-        if (videoStarted) {
-            // Stop video
-            localStreamRef.current.getTracks().forEach(function (track) { return track.stop(); });
-            pcRef.current.close();
-            pcRef.current = null;
-            setVideoStarted(false);
-        }
-        else {
-            // Start video
-            setVideoStarted(true);
-            startMedia();
-            initiateCall();
-        }
+    var scrollToBottom = function () {
+        var _a;
+        (_a = messagesEndRef.current) === null || _a === void 0 ? void 0 : _a.scrollIntoView({ behavior: "smooth" });
     };
-    return (react_1["default"].createElement("div", { className: "min-h-screen flex flex-col items-center bg-gray-100" },
-        react_1["default"].createElement("header", { className: "bg-black text-white w-full py-4 flex justify-center" },
-            react_1["default"].createElement("h1", { className: "text-lg" }, "Meet")),
-        react_1["default"].createElement("main", { className: "flex-grow flex flex-col items-center py-6 px-4" },
-            react_1["default"].createElement("p", { className: "text-center mb-8" }, "Connect with your friends through chat or video call."),
-            !connected && (react_1["default"].createElement("div", { className: "space-y-4 w-full max-w-xs" },
-                react_1["default"].createElement(button_1.Button, { className: "w-full bg-black text-white py-2", onClick: function () { return setConnected(true); } }, "Connect"))),
-            connected && (react_1["default"].createElement("div", { className: "w-full mt-4 relative" },
-                react_1["default"].createElement("div", { className: "absolute inset-0 bg-cover bg-center rounded-md", style: {
-                        backgroundImage: "url('/images/image.jpg')",
-                        height: "70vh"
-                    } },
-                    react_1["default"].createElement("div", { className: "relative z-10 w-full h-full flex flex-col" },
-                        react_1["default"].createElement("div", { className: "flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg" },
-                            react_1["default"].createElement("div", { className: "p-3.5 flex items-center justify-between bg-black bg-opacity-10 rounded-t-lg sticky top-0" },
-                                react_1["default"].createElement("h2", { className: "text-black" }, "Chat"),
-                                react_1["default"].createElement(button_1.Button, { className: "px-4 py-2 rounded flex items-center " + (videoStarted ? "bg-red-600" : "bg-white") + " text-white", onClick: toggleVideo },
-                                    react_1["default"].createElement(image_1["default"], { src: "/images/video-camera.png", height: "20", width: "20", alt: "video icon" }))),
-                            react_1["default"].createElement("div", { className: "space-y-2" },
-                                messages.map(function (msg, index) { return (react_1["default"].createElement("div", { key: index, className: "flex " + (msg.sender === "Me" ? "justify-start" : "justify-end") + " mb-2" },
-                                    react_1["default"].createElement("p", { className: "bg-white bg-opacity-90 text-black p-3 rounded-lg shadow-sm max-w-xs" }, msg))); }),
-                                react_1["default"].createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full " + (videoStarted ? "block" : "hidden") }),
-                                react_1["default"].createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full " + (videoStarted ? "block" : "hidden") }))),
-                        react_1["default"].createElement("div", { className: "flex items-center p-3.5 bg-white bg-opacity-20 border-t border-gray-300" },
-                            react_1["default"].createElement("input", { className: "flex-grow bg-opacity-30 text-black px-2 py-2 rounded backdrop-blur-lg border border-gray-300", type: "text", value: newMessage, placeholder: "Type a message...", onChange: function (e) { return setNewMessage(e.target.value); }, onKeyDown: function (e) {
-                                    if (e.key === "Enter")
-                                        handleSendMessage();
-                                } }),
-                            react_1["default"].createElement(button_1.Button, { className: "bg-white text-white px-4 ml-2 rounded", onClick: handleSendMessage },
-                                react_1["default"].createElement(image_1["default"], { src: "/images/message.png", height: "20", width: "20", alt: "video icon" }))))))))));
+    return (React.createElement("div", { className: "min-h-screen flex flex-col items-center bg-gray-100" },
+        React.createElement("header", { className: "bg-black text-white w-full py-4 flex justify-center" },
+            React.createElement("h1", { className: "text-lg" }, "Meet")),
+        React.createElement("main", { className: "flex-grow flex flex-col items-center py-6 px-4" },
+            React.createElement("p", { className: "text-center mb-8" }, "Connect with your friends through chat or video call."),
+            !connected && (React.createElement("div", { className: "space-y-4 w-full max-w-xs" },
+                React.createElement(button_1.Button, { className: "w-full bg-black text-white py-2", onClick: function () { return setConnected(true); } }, "Connect"),
+                React.createElement(button_1.Button, { className: "w-full bg-black text-white py-2", onClick: function () {
+                        setConnected(true);
+                        setIsHost(true);
+                    } }, "Host"))),
+            connected && (React.createElement("div", { className: "w-full mt-4 relative" },
+                React.createElement("div", { className: "absolute inset-0 bg-cover bg-center rounded-md", style: { backgroundImage: "url('/images/image.jpg')", height: '70vh' } },
+                    React.createElement("div", { className: "relative z-10 w-full h-full flex flex-col" },
+                        React.createElement("div", { className: "flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg" },
+                            React.createElement("div", { className: "p-3.5 flex items-center justify-between bg-black bg-opacity-10 rounded-t-lg" },
+                                React.createElement("h2", { className: "text-black" }, "Chat"),
+                                React.createElement(button_1.Button, { className: "bg-white text-white px-4 py-2 rounded " + (videoStarted ? 'bg-red-500' : ''), onClick: function () {
+                                        if (videoStarted) {
+                                            setVideoStarted(false);
+                                            localStreamRef.current.getTracks().forEach(function (track) { return track.stop(); });
+                                        }
+                                        else {
+                                            setVideoStarted(true);
+                                            startMedia();
+                                            if (isHost) {
+                                                initiateCall();
+                                            }
+                                        }
+                                    } },
+                                    React.createElement(image_1["default"], { src: "/images/video-camera.png", alt: "video camera", height: "20", width: "20" }))),
+                            React.createElement("div", { className: "space-y-2" },
+                                messages.map(function (msg, index) { return (React.createElement("div", { key: index, className: "flex " + (msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start') + " mb-2" },
+                                    React.createElement("p", { className: "bg-white bg-opacity-90 text-black p-3 rounded-lg shadow-sm max-w-xs" }, msg.text),
+                                    React.createElement("div", { ref: messagesEndRef }))); }),
+                                React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }),
+                                React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }))),
+                        React.createElement("div", { className: "flex items-center p-3.5 bg-white bg-opacity-20 border-t border-gray-300" },
+                            React.createElement("input", { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-2 py-2 rounded backdrop-blur-lg border border-gray-300", onKeyDown: handleSendMessage }),
+                            React.createElement(button_1.Button, { className: "bg-white text-white px-4 ml-2 rounded", value: newMessage, onClick: handleSendMessage },
+                                React.createElement(image_1["default"], { src: "/images/message.png", alt: "video camera", height: "20", width: "20" }))))))))));
 }
 exports["default"] = WebRTC;

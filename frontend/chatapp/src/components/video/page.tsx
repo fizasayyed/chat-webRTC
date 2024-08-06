@@ -1,29 +1,34 @@
+/* eslint-disable */
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import io from "socket.io-client";
-import { Button } from "../ui/button";
-import Image from "next/image";
+import { useEffect, useRef, useState } from 'react';
+import io from 'socket.io-client';
+import { Button } from '../ui/button';
+import Image from 'next/image';
 
 export default function WebRTC() {
     const [messages, setMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState("");
-    const [connected, setConnected] = useState(false);
-    const [videoStarted, setVideoStarted] = useState(false);
+    const [newMessage, setNewMessage] = useState('');
+    const [connected, setConnected] = useState(false); // connection status
+    const [videoStarted, setVideoStarted] = useState(false); // video call status
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
     const socketRef = useRef(null);
-    const pcRef = useRef(null);
+    const peerRef = useRef(null);
     const localStreamRef = useRef(null);
+    const messagesEndRef = useRef(null);
+    const [isHost, setIsHost] = useState(false); // To identify if the client is a host
 
     useEffect(() => {
-        socketRef.current = io.connect("http://localhost:4000");
+        // Initialize socket connection
+        socketRef.current = io.connect('http://192.168.5.183:4000');
 
-        socketRef.current.on("offer", handleReceiveOffer);
-        socketRef.current.on("answer", handleReceiveAnswer);
-        socketRef.current.on("candidate", handleNewICECandidateMsg);
+        // Set up event listeners for WebRTC signaling
+        socketRef.current.on('offer', handleReceiveOffer);
+        socketRef.current.on('answer', handleReceiveAnswer);
+        socketRef.current.on('candidate', handleNewICECandidateMsg);
 
-        socketRef.current.on("message", (message) => {
-            setMessages((prevMessages) => [...prevMessages, message]);
+        socketRef.current.on('message', (message) => {
+            setMessages(prevMessages => [...prevMessages, message]);
         });
 
         return () => {
@@ -33,99 +38,85 @@ export default function WebRTC() {
 
     const startMedia = async () => {
         try {
-            localStreamRef.current = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true,
-            });
+            localStreamRef.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             localVideoRef.current.srcObject = localStreamRef.current;
-            createPeerConnection();
+            createPeerConnection(); // Setup peer connection when media is obtained
         } catch (error) {
-            console.error("Error accessing media devices.", error);
+            console.error('Error accessing media devices.', error);
         }
     };
 
     const createPeerConnection = () => {
-        pcRef.current = new RTCPeerConnection({
-            iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+        peerRef.current = new RTCPeerConnection({
+            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
         });
 
-        pcRef.current.onicecandidate = (event) => {
+        peerRef.current.onicecandidate = event => {
             if (event.candidate) {
-                socketRef.current.emit("candidate", event.candidate);
+                socketRef.current.emit('candidate', event.candidate);
             }
         };
 
-        pcRef.current.ontrack = (event) => {
+        peerRef.current.ontrack = event => {
             remoteVideoRef.current.srcObject = event.streams[0];
         };
 
-        localStreamRef.current.getTracks().forEach((track) => {
-            pcRef.current.addTrack(track, localStreamRef.current);
+        localStreamRef.current.getTracks().forEach(track => {
+            peerRef.current.addTrack(track, localStreamRef.current);
         });
     };
 
     const initiateCall = async () => {
         try {
-            if (!pcRef.current) createPeerConnection();
-            const offer = await pcRef.current.createOffer();
-            await pcRef.current.setLocalDescription(offer);
-            socketRef.current.emit("offer", offer);
+            if (!peerRef.current) createPeerConnection();
+            const offer = await peerRef.current.createOffer();
+            await peerRef.current.setLocalDescription(offer);
+            socketRef.current.emit('offer', offer);
         } catch (error) {
-            console.error("Error creating offer.", error);
+            console.error('Error creating offer.', error);
         }
     };
 
     const handleReceiveOffer = async (offer) => {
-        if (!pcRef.current) createPeerConnection();
+        if (!peerRef.current) createPeerConnection();
 
         try {
-            await pcRef.current.setRemoteDescription(offer);
-            const answer = await pcRef.current.createAnswer();
-            await pcRef.current.setLocalDescription(answer);
-            socketRef.current.emit("answer", answer);
+            await peerRef.current.setRemoteDescription(offer);
+            const answer = await peerRef.current.createAnswer();
+            await peerRef.current.setLocalDescription(answer);
+            socketRef.current.emit('answer', answer);
         } catch (error) {
-            console.error("Error handling offer.", error);
+            console.error('Error handling offer.', error);
         }
     };
 
     const handleReceiveAnswer = async (answer) => {
         try {
-            await pcRef.current.setRemoteDescription(answer);
+            await peerRef.current.setRemoteDescription(answer);
         } catch (error) {
-            console.error("Error handling answer.", error);
+            console.error('Error handling answer.', error);
         }
     };
 
     const handleNewICECandidateMsg = async (candidate) => {
         try {
-            await pcRef.current.addIceCandidate(candidate);
+            await peerRef.current.addIceCandidate(candidate);
         } catch (error) {
-            console.error("Error adding received ICE candidate.", error);
+            console.error('Error adding received ICE candidate.', error);
         }
     };
 
-    const handleSendMessage = () => {
-        if (newMessage.trim()) {
-            const message = { text: newMessage, sender: "Me" };
-            socketRef.current.emit("message", message.text);
-            setMessages((prevMessages) => [...prevMessages, `Me: ${newMessage}`]);
-            setNewMessage("");
+    const handleSendMessage = (e) => {
+        if (e.key === 'Enter' && newMessage.trim()) {
+            const message = { text: newMessage, sender: socketRef.current.id };
+            socketRef.current.emit('message', message);
+            setMessages(prevMessages => [...prevMessages, message]);
+            setNewMessage('');
         }
     };
 
-    const toggleVideo = () => {
-        if (videoStarted) {
-            // Stop video
-            localStreamRef.current.getTracks().forEach((track) => track.stop());
-            pcRef.current.close();
-            pcRef.current = null;
-            setVideoStarted(false);
-        } else {
-            // Start video
-            setVideoStarted(true);
-            startMedia();
-            initiateCall();
-        }
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     return (
@@ -134,90 +125,82 @@ export default function WebRTC() {
                 <h1 className="text-lg">Meet</h1>
             </header>
             <main className="flex-grow flex flex-col items-center py-6 px-4">
-                <p className="text-center mb-8">
-                    Connect with your friends through chat or video call.
-                </p>
+                <p className="text-center mb-8">Connect with your friends through chat or video call.</p>
 
                 {!connected && (
                     <div className="space-y-4 w-full max-w-xs">
-                        <Button
-                            className="w-full bg-black text-white py-2"
-                            onClick={() => setConnected(true)}
-                        >
+                        <Button className="w-full bg-black text-white py-2" onClick={() => setConnected(true)}>
                             Connect
+                        </Button>
+                        <Button className="w-full bg-black text-white py-2" onClick={() => {
+                            setConnected(true);
+                            setIsHost(true);
+                        }}>
+                            Host
                         </Button>
                     </div>
                 )}
 
                 {connected && (
                     <div className="w-full mt-4 relative">
-                        <div
-                            className="absolute inset-0 bg-cover bg-center rounded-md"
-                            style={{
-                                backgroundImage: `url('/images/image.jpg')`,
-                                height: "70vh",
-                            }}
-                        >
+                        <div className="absolute inset-0 bg-cover bg-center rounded-md" style={{ backgroundImage: `url('/images/image.jpg')`, height: '70vh' }}>
                             <div className="relative z-10 w-full h-full flex flex-col">
                                 <div className="flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg">
-                                    <div className="p-3.5 flex items-center justify-between bg-black bg-opacity-10 rounded-t-lg sticky top-0">
+                                    <div className="p-3.5 flex items-center justify-between bg-black bg-opacity-10 rounded-t-lg">
                                         <h2 className="text-black">Chat</h2>
                                         <Button
-                                            className={`px-4 py-2 rounded flex items-center ${videoStarted ? "bg-red-600" : "bg-white"
-                                                } text-white`}
-                                            onClick={toggleVideo}
+                                            className={`bg-white text-white px-4 py-2 rounded ${videoStarted ? 'bg-red-500' : ''}`}
+                                            onClick={() => {
+                                                if (videoStarted) {
+                                                    setVideoStarted(false);
+                                                    localStreamRef.current.getTracks().forEach(track => track.stop());
+                                                } else {
+                                                    setVideoStarted(true);
+                                                    startMedia();
+                                                    if (isHost) {
+                                                        initiateCall();
+                                                    }
+                                                }
+                                            }}
                                         >
-                                            <Image src="/images/video-camera.png" height="20" width="20" alt="video icon" />
+                                            <Image src="/images/video-camera.png" alt="video camera" height="20" width="20" />
                                         </Button>
                                     </div>
                                     <div className="space-y-2">
                                         {messages.map((msg, index) => (
                                             <div
                                                 key={index}
-                                                className={`flex ${msg.sender === "Me" ? "justify-start" : "justify-end"
-                                                    } mb-2`}
+                                                className={`flex ${msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start'} mb-2`}
                                             >
                                                 <p className="bg-white bg-opacity-90 text-black p-3 rounded-lg shadow-sm max-w-xs">
-                                                    {msg}
+                                                    {msg.text}
                                                 </p>
+                                                <div ref={messagesEndRef} />
                                             </div>
                                         ))}
-                                        <video
-                                            ref={localVideoRef}
-                                            autoPlay
-                                            muted
-                                            className={`w-full ${videoStarted ? "block" : "hidden"}`}
-                                        />
-                                        <video
-                                            ref={remoteVideoRef}
-                                            autoPlay
-                                            className={`w-full ${videoStarted ? "block" : "hidden"}`}
-                                        />
+                                        <video ref={localVideoRef} autoPlay muted className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
+                                        <video ref={remoteVideoRef} autoPlay className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
                                     </div>
                                 </div>
                                 <div className="flex items-center p-3.5 bg-white bg-opacity-20 border-t border-gray-300">
                                     <input
-                                        className="flex-grow bg-opacity-30 text-black px-2 py-2 rounded backdrop-blur-lg border border-gray-300"
                                         type="text"
                                         value={newMessage}
-                                        placeholder="Type a message..."
                                         onChange={(e) => setNewMessage(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") handleSendMessage();
-                                        }}
+                                        placeholder="Type a message..."
+                                        className="flex-grow bg-opacity-30 text-black px-2 py-2 rounded backdrop-blur-lg border border-gray-300"
+                                        onKeyDown={handleSendMessage}
                                     />
-                                    <Button
-                                        className="bg-white text-white px-4 ml-2 rounded"
-                                        onClick={handleSendMessage}
-                                    >
-                                        <Image src="/images/message.png" height="20" width="20" alt="video icon" />
+                                    <Button className="bg-white text-white px-4 ml-2 rounded" value={newMessage} onClick={handleSendMessage}>
+                                        <Image src="/images/message.png" alt="video camera" height="20" width="20" />
                                     </Button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
-            </main>
-        </div>
+            </main >
+        </div >
     );
+
 }
