@@ -166,6 +166,8 @@ export default function WebRTC() {
                                                     }
                                                 }
                                             }}
+                                            variant="ghost"
+                                            size="sm"
                                         >
                                             <Image src="/images/video-camera.png" alt="video camera" height="20" width="20" />
                                         </Button>
@@ -186,18 +188,18 @@ export default function WebRTC() {
                                         <video ref={remoteVideoRef} autoPlay className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
                                     </div>
                                 </div>
-                                <div className="flex items-center p-3.5 bg-white bg-opacity-20 border-t border-gray-300">
+                                <div className="flex items-center p-2 bg-white bg-opacity-20 border-t border-gray-300">
                                     <input
                                         type="text"
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         placeholder="Type a message..."
-                                        className="flex-grow bg-opacity-30 text-black px-2 py-2 rounded backdrop-blur-lg border border-gray-300"
+                                        className="flex-grow bg-opacity-30 text-black px-1 py-1 rounded backdrop-blur-lg border border-gray-300"
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter") handleSendMessage();
                                         }}
                                     />
-                                    <Button className="bg-white text-white px-4 ml-2 rounded" onClick={handleSendMessage}>
+                                    <Button className="bg-white text-white px-2 ml-2 rounded" variant="ghost" size="sm" onClick={handleSendMessage}>
                                         <Image src="/images/message.png" alt="video camera" height="20" width="20" />
                                     </Button>
                                 </div>

@@ -246,7 +246,7 @@ function WebRTC() {
                                                 initiateCall();
                                             }
                                         }
-                                    } },
+                                    }, variant: "ghost", size: "sm" },
                                     React.createElement(image_1["default"], { src: "/images/video-camera.png", alt: "video camera", height: "20", width: "20" }))),
                             React.createElement("div", { className: "space-y-2" },
                                 messages.map(function (msg, index) { return (React.createElement("div", { key: index, className: "flex " + (msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start') + " mb-2" },
@@ -254,12 +254,12 @@ function WebRTC() {
                                     React.createElement("div", { ref: messagesEndRef }))); }),
                                 React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }),
                                 React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }))),
-                        React.createElement("div", { className: "flex items-center p-3.5 bg-white bg-opacity-20 border-t border-gray-300" },
-                            React.createElement("input", { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-2 py-2 rounded backdrop-blur-lg border border-gray-300", onKeyDown: function (e) {
+                        React.createElement("div", { className: "flex items-center p-2 bg-white bg-opacity-20 border-t border-gray-300" },
+                            React.createElement("input", { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-1 py-1 rounded backdrop-blur-lg border border-gray-300", onKeyDown: function (e) {
                                     if (e.key === "Enter")
                                         handleSendMessage();
                                 } }),
-                            React.createElement(button_1.Button, { className: "bg-white text-white px-4 ml-2 rounded", onClick: handleSendMessage },
+                            React.createElement(button_1.Button, { className: "bg-white text-white px-2 ml-2 rounded", variant: "ghost", size: "sm", onClick: handleSendMessage },
                                 React.createElement(image_1["default"], { src: "/images/message.png", alt: "video camera", height: "20", width: "20" }))))))))));
 }
 exports["default"] = WebRTC;
