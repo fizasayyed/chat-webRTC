@@ -260,13 +260,13 @@ function WebRTC() {
             connected && (React.createElement("div", { className: "w-full mt-4 relative" },
                 React.createElement("div", { className: "absolute inset-0 bg-cover bg-center rounded-md", style: { backgroundImage: "url('/images/image.jpg')", height: '70vh' } },
                     React.createElement("div", { className: "relative z-10 w-full h-full flex flex-col" },
-                        React.createElement("div", { className: "flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg scrollbar scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100" },
-                            React.createElement("div", { className: "px-2.5 py-2 flex items-center justify-between bg-black bg-opacity-10 rounded-lg sticky top-0" },
+                        React.createElement("div", { className: "flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100" },
+                            React.createElement("div", { className: "px-2.5 py-2 flex items-center bg-black sticky top-0" },
                                 React.createElement(avatar_1.Avatar, { className: "mr-2" },
                                     React.createElement(avatar_1.AvatarImage, { src: "https://github.com/shadcn.png" }),
                                     React.createElement(avatar_1.AvatarFallback, null, (_a = username[0]) === null || _a === void 0 ? void 0 : _a.toUpperCase())),
-                                React.createElement("h2", { className: "text-black" }, username),
-                                React.createElement(button_1.Button, { className: "bg-white text-white px-4 py-2 rounded " + (videoStarted ? 'bg-red-500' : ''), onClick: function () {
+                                React.createElement("h2", { className: "text-white text-lg pl-2" }, username),
+                                React.createElement(button_1.Button, { className: "bg-white text-white px-4 py-2 ml-auto rounded " + (videoStarted ? 'bg-red-500' : ''), onClick: function () {
                                         if (videoStarted) {
                                             setVideoStarted(false);
                                             localStreamRef.current.getTracks().forEach(function (track) { return track.stop(); });
@@ -280,13 +280,13 @@ function WebRTC() {
                                         }
                                     }, variant: "ghost", size: "sm" },
                                     React.createElement(image_1["default"], { src: "/images/video-camera.png", alt: "video camera", height: "20", width: "20" }))),
-                            React.createElement("div", { className: "space-y-2" },
+                            React.createElement("div", { className: "flex flex-col space-y-2 flex-grow" },
                                 messages.map(function (msg, index) { return (React.createElement("div", { key: index, className: "flex " + (msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start') + " mb-2" },
                                     React.createElement("p", { className: "px-3 py-1.5 rounded-lg shadow-sm max-w-xs mt-1 " + (msg.sender === socketRef.current.id ? 'bg-black text-white' : 'bg-white text-black') }, msg.text),
                                     React.createElement("div", { ref: messagesEndRef }))); }),
                                 React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }),
                                 React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }))),
-                        React.createElement("div", { className: "flex items-center p-2 bg-white bg-opacity-20 border-t border-gray-300" },
+                        React.createElement("div", { className: "flex p-2 mt-auto bg-black bg-opacity-10 border-t border-gray-300 rounded-b-lg" },
                             React.createElement(input_1.Input, { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-1 py-1 rounded backdrop-blur-lg border border-gray-300", onKeyDown: function (e) {
                                     if (e.key === "Enter")
                                         handleSendMessage();

@@ -199,15 +199,15 @@ export default function WebRTC() {
                     <div className="w-full mt-4 relative">
                         <div className="absolute inset-0 bg-cover bg-center rounded-md" style={{ backgroundImage: `url('/images/image.jpg')`, height: '70vh' }}>
                             <div className="relative z-10 w-full h-full flex flex-col">
-                                <div className="flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg scrollbar scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
-                                    <div className="px-2.5 py-2 flex items-center justify-between bg-black bg-opacity-10 rounded-lg sticky top-0">
+                                <div className="flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
+                                    <div className="px-2.5 py-2 flex items-center bg-black sticky top-0">
                                         <Avatar className="mr-2">
                                             <AvatarImage src="https://github.com/shadcn.png" />
                                             <AvatarFallback>{username[0]?.toUpperCase()}</AvatarFallback>
                                         </Avatar>
-                                        <h2 className="text-black">{username}</h2>
+                                        <h2 className="text-white text-lg pl-2">{username}</h2>
                                         <Button
-                                            className={`bg-white text-white px-4 py-2 rounded ${videoStarted ? 'bg-red-500' : ''}`}
+                                            className={`bg-white text-white px-4 py-2 ml-auto rounded ${videoStarted ? 'bg-red-500' : ''}`}
                                             onClick={() => {
                                                 if (videoStarted) {
                                                     setVideoStarted(false);
@@ -226,7 +226,7 @@ export default function WebRTC() {
                                             <Image src="/images/video-camera.png" alt="video camera" height="20" width="20" />
                                         </Button>
                                     </div>
-                                    <div className="space-y-2">
+                                    <div className="flex flex-col space-y-2 flex-grow">
                                         {messages.map((msg, index) => (
                                             <div
                                                 key={index}
@@ -242,7 +242,7 @@ export default function WebRTC() {
                                         <video ref={remoteVideoRef} autoPlay className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
                                     </div>
                                 </div>
-                                <div className="flex items-center p-2 bg-white bg-opacity-20 border-t border-gray-300">
+                                <div className="flex p-2 mt-auto bg-black bg-opacity-10 border-t border-gray-300 rounded-b-lg">
                                     <Input
                                         type="text"
                                         value={newMessage}
