@@ -48,20 +48,25 @@ exports.__esModule = true;
 var react_1 = require("react");
 var socket_io_client_1 = require("socket.io-client");
 var button_1 = require("../ui/button");
+var input_1 = require("../ui/input");
 var image_1 = require("next/image");
+var avatar_1 = require("../ui/avatar");
 function WebRTC() {
     var _this = this;
-    var _a = react_1.useState([]), messages = _a[0], setMessages = _a[1];
-    var _b = react_1.useState(''), newMessage = _b[0], setNewMessage = _b[1];
-    var _c = react_1.useState(false), connected = _c[0], setConnected = _c[1]; // connection status
-    var _d = react_1.useState(false), videoStarted = _d[0], setVideoStarted = _d[1]; // video call status
+    var _a;
+    var _b = react_1.useState([]), messages = _b[0], setMessages = _b[1];
+    var _c = react_1.useState(''), newMessage = _c[0], setNewMessage = _c[1];
+    var _d = react_1.useState(''), username = _d[0], setUsername = _d[1]; // for user's username
+    var _e = react_1.useState(false), connected = _e[0], setConnected = _e[1]; // connection status
+    var _f = react_1.useState(false), videoStarted = _f[0], setVideoStarted = _f[1]; // video call status
+    var _g = react_1.useState(false), hostClicked = _g[0], setHostClicked = _g[1]; // to get username and avatar fields
     var localVideoRef = react_1.useRef(null);
     var remoteVideoRef = react_1.useRef(null);
     var socketRef = react_1.useRef(null);
     var peerRef = react_1.useRef(null);
     var localStreamRef = react_1.useRef(null);
     var messagesEndRef = react_1.useRef(null);
-    var _e = react_1.useState(false), isHost = _e[0], setIsHost = _e[1]; // To identify if the client is a host
+    var _h = react_1.useState(false), isHost = _h[0], setIsHost = _h[1]; // To identify if the client is a host
     react_1.useEffect(function () {
         // Initialize socket connection
         socketRef.current = socket_io_client_1["default"].connect('http://192.168.5.183:4000');
@@ -207,7 +212,12 @@ function WebRTC() {
     }); };
     var handleSendMessage = function () {
         if (newMessage.trim()) {
-            var message_1 = { text: newMessage, sender: socketRef.current.id };
+            var message_1 = {
+                text: newMessage,
+                sender: socketRef.current.id,
+                username: username,
+                avatar: 'https://github.com/shadcn.png'
+            };
             socketRef.current.emit('message', message_1);
             setMessages(function (prevMessages) { return __spreadArrays(prevMessages, [message_1]); });
             setNewMessage('');
@@ -222,18 +232,29 @@ function WebRTC() {
             React.createElement("h1", { className: "text-lg" }, "Meet")),
         React.createElement("main", { className: "flex-grow flex flex-col items-center py-6 px-4" },
             React.createElement("p", { className: "text-center mb-8" }, "Connect with your friends through chat or video call."),
-            !connected && (React.createElement("div", { className: "space-y-4 w-full max-w-xs" },
+            !connected && (React.createElement("div", { className: "flex flex-col space-y-4 w-full max-w-xs items-center" },
                 React.createElement(button_1.Button, { className: "w-full bg-black text-white py-2", onClick: function () { return setConnected(true); } }, "Connect"),
                 React.createElement(button_1.Button, { className: "w-full bg-black text-white py-2", onClick: function () {
-                        setConnected(true);
-                        setIsHost(true);
-                    } }, "Host"))),
+                        setHostClicked(true);
+                    } }, "Host"),
+                hostClicked && (React.createElement("div", { className: "flex flex-row py-10 justify-center items-center" },
+                    React.createElement(avatar_1.Avatar, null,
+                        React.createElement(avatar_1.AvatarImage, { src: "https://github.com/shadcn.png" }),
+                        React.createElement(avatar_1.AvatarFallback, null, "CN")),
+                    React.createElement(input_1.Input, { className: "mx-4 my-1.5", type: "text", value: username, onChange: function (e) { return setUsername(e.target.value); }, placeholder: "Your name please..." }),
+                    React.createElement(button_1.Button, { size: "sm", onClick: function () {
+                            setConnected(true);
+                            setIsHost(true);
+                        } }, "Enter"))))),
             connected && (React.createElement("div", { className: "w-full mt-4 relative" },
                 React.createElement("div", { className: "absolute inset-0 bg-cover bg-center rounded-md", style: { backgroundImage: "url('/images/image.jpg')", height: '70vh' } },
                     React.createElement("div", { className: "relative z-10 w-full h-full flex flex-col" },
                         React.createElement("div", { className: "flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg scrollbar scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100" },
                             React.createElement("div", { className: "px-2.5 py-2 flex items-center justify-between bg-black bg-opacity-10 rounded-lg sticky top-0" },
-                                React.createElement("h2", { className: "text-black" }, "Chat"),
+                                React.createElement(avatar_1.Avatar, { className: "mr-2" },
+                                    React.createElement(avatar_1.AvatarImage, { src: "https://github.com/shadcn.png" }),
+                                    React.createElement(avatar_1.AvatarFallback, null, (_a = username[0]) === null || _a === void 0 ? void 0 : _a.toUpperCase())),
+                                React.createElement("h2", { className: "text-black" }, username),
                                 React.createElement(button_1.Button, { className: "bg-white text-white px-4 py-2 rounded " + (videoStarted ? 'bg-red-500' : ''), onClick: function () {
                                         if (videoStarted) {
                                             setVideoStarted(false);
@@ -250,12 +271,12 @@ function WebRTC() {
                                     React.createElement(image_1["default"], { src: "/images/video-camera.png", alt: "video camera", height: "20", width: "20" }))),
                             React.createElement("div", { className: "space-y-2" },
                                 messages.map(function (msg, index) { return (React.createElement("div", { key: index, className: "flex " + (msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start') + " mb-2" },
-                                    React.createElement("p", { className: "bg-white bg-opacity-90 text-black p-3 rounded-lg shadow-sm max-w-xs" }, msg.text),
+                                    React.createElement("p", { className: "px-3 py-1.5 rounded-lg shadow-sm max-w-xs mt-1 " + (msg.sender === socketRef.current.id ? 'bg-black text-white' : 'bg-white text-black') }, msg.text),
                                     React.createElement("div", { ref: messagesEndRef }))); }),
                                 React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }),
                                 React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }))),
                         React.createElement("div", { className: "flex items-center p-2 bg-white bg-opacity-20 border-t border-gray-300" },
-                            React.createElement("input", { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-1 py-1 rounded backdrop-blur-lg border border-gray-300", onKeyDown: function (e) {
+                            React.createElement(input_1.Input, { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-1 py-1 rounded backdrop-blur-lg border border-gray-300", onKeyDown: function (e) {
                                     if (e.key === "Enter")
                                         handleSendMessage();
                                 } }),

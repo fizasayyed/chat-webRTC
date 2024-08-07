@@ -3,13 +3,17 @@
 import { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 import Image from 'next/image';
+import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 
 export default function WebRTC() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [username, setUsername] = useState(''); // for user's username
     const [connected, setConnected] = useState(false); // connection status
     const [videoStarted, setVideoStarted] = useState(false); // video call status
+    const [hostClicked, setHostClicked] = useState(false); // to get username and avatar fields
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
     const socketRef = useRef(null);
@@ -27,7 +31,7 @@ export default function WebRTC() {
         socketRef.current.on('answer', handleReceiveAnswer);
         socketRef.current.on('candidate', handleNewICECandidateMsg);
 
-        socketRef.current.on('message', (message) => {
+        socketRef.current.on('message', (message: any) => {
             setMessages(prevMessages => [...prevMessages, message]);
         });
 
@@ -55,17 +59,17 @@ export default function WebRTC() {
             iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
         });
 
-        peerRef.current.onicecandidate = event => {
+        peerRef.current.onicecandidate = (event: { candidate: any; }) => {
             if (event.candidate) {
                 socketRef.current.emit('candidate', event.candidate);
             }
         };
 
-        peerRef.current.ontrack = event => {
+        peerRef.current.ontrack = (event: { streams: any[]; }) => {
             remoteVideoRef.current.srcObject = event.streams[0];
         };
 
-        localStreamRef.current.getTracks().forEach(track => {
+        localStreamRef.current.getTracks().forEach((track: any) => {
             peerRef.current.addTrack(track, localStreamRef.current);
         });
     };
@@ -81,7 +85,7 @@ export default function WebRTC() {
         }
     };
 
-    const handleReceiveOffer = async (offer) => {
+    const handleReceiveOffer = async (offer: any) => {
         if (!peerRef.current) createPeerConnection();
 
         try {
@@ -94,7 +98,7 @@ export default function WebRTC() {
         }
     };
 
-    const handleReceiveAnswer = async (answer) => {
+    const handleReceiveAnswer = async (answer: any) => {
         try {
             await peerRef.current.setRemoteDescription(answer);
         } catch (error) {
@@ -102,7 +106,7 @@ export default function WebRTC() {
         }
     };
 
-    const handleNewICECandidateMsg = async (candidate) => {
+    const handleNewICECandidateMsg = async (candidate: any) => {
         try {
             await peerRef.current.addIceCandidate(candidate);
         } catch (error) {
@@ -112,7 +116,12 @@ export default function WebRTC() {
 
     const handleSendMessage = () => {
         if (newMessage.trim()) {
-            const message = { text: newMessage, sender: socketRef.current.id };
+            const message = {
+                text: newMessage,
+                sender: socketRef.current.id,
+                username: username,
+                avatar: 'https://github.com/shadcn.png'
+            };
             socketRef.current.emit('message', message);
             setMessages(prevMessages => [...prevMessages, message]);
             setNewMessage('');
@@ -132,16 +141,35 @@ export default function WebRTC() {
                 <p className="text-center mb-8">Connect with your friends through chat or video call.</p>
 
                 {!connected && (
-                    <div className="space-y-4 w-full max-w-xs">
+                    <div className="flex flex-col space-y-4 w-full max-w-xs items-center">
                         <Button className="w-full bg-black text-white py-2" onClick={() => setConnected(true)}>
                             Connect
                         </Button>
                         <Button className="w-full bg-black text-white py-2" onClick={() => {
-                            setConnected(true);
-                            setIsHost(true);
+                            setHostClicked(true);
                         }}>
                             Host
                         </Button>
+                        {hostClicked && (
+                            <div className="flex flex-row py-10 justify-center items-center">
+                                <Avatar>
+                                    <AvatarImage src={"https://github.com/shadcn.png"} />
+                                    <AvatarFallback>CN</AvatarFallback>
+                                </Avatar>
+                                <Input
+                                    className="mx-4 my-1.5"
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    placeholder="Your name please..." />
+                                <Button
+                                    size="sm"
+                                    onClick={() => {
+                                        setConnected(true);
+                                        setIsHost(true);
+                                    }}>Enter</Button>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -151,13 +179,18 @@ export default function WebRTC() {
                             <div className="relative z-10 w-full h-full flex flex-col">
                                 <div className="flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg scrollbar scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
                                     <div className="px-2.5 py-2 flex items-center justify-between bg-black bg-opacity-10 rounded-lg sticky top-0">
-                                        <h2 className="text-black">Chat</h2>
+                                        {/* <h2 className="text-black">Chat</h2> */}
+                                        <Avatar className="mr-2">
+                                            <AvatarImage src="https://github.com/shadcn.png" />
+                                            <AvatarFallback>{username[0]?.toUpperCase()}</AvatarFallback>
+                                        </Avatar>
+                                        <h2 className="text-black">{username}</h2>
                                         <Button
                                             className={`bg-white text-white px-4 py-2 rounded ${videoStarted ? 'bg-red-500' : ''}`}
                                             onClick={() => {
                                                 if (videoStarted) {
                                                     setVideoStarted(false);
-                                                    localStreamRef.current.getTracks().forEach(track => track.stop());
+                                                    localStreamRef.current.getTracks().forEach((track: { stop: () => any; }) => track.stop());
                                                 } else {
                                                     setVideoStarted(true);
                                                     startMedia();
@@ -178,7 +211,7 @@ export default function WebRTC() {
                                                 key={index}
                                                 className={`flex ${msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start'} mb-2`}
                                             >
-                                                <p className="bg-white bg-opacity-90 text-black p-3 rounded-lg shadow-sm max-w-xs">
+                                                <p className={`px-3 py-1.5 rounded-lg shadow-sm max-w-xs mt-1 ${msg.sender === socketRef.current.id ? 'bg-black text-white' : 'bg-white text-black'}`}>
                                                     {msg.text}
                                                 </p>
                                                 <div ref={messagesEndRef} />
@@ -189,7 +222,7 @@ export default function WebRTC() {
                                     </div>
                                 </div>
                                 <div className="flex items-center p-2 bg-white bg-opacity-20 border-t border-gray-300">
-                                    <input
+                                    <Input
                                         type="text"
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
