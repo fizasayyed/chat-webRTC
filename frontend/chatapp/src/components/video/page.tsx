@@ -199,7 +199,7 @@ export default function WebRTC() {
                     <div className="w-full mt-4 relative">
                         <div className="absolute inset-0 bg-cover bg-center rounded-md" style={{ backgroundImage: `url('/images/image.jpg')`, height: '70vh' }}>
                             <div className="relative z-10 w-full h-full flex flex-col">
-                                <div className="flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
+                                <div className="flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
                                     <div className="px-2.5 py-2 flex items-center bg-black sticky top-0">
                                         <Avatar className="mr-2">
                                             <AvatarImage src="https://github.com/shadcn.png" />
@@ -226,11 +226,11 @@ export default function WebRTC() {
                                             <Image src="/images/video-camera.png" alt="video camera" height="20" width="20" />
                                         </Button>
                                     </div>
-                                    <div className="flex flex-col space-y-2 flex-grow">
+                                    <div className="space-y-1 px-2">
                                         {messages.map((msg, index) => (
                                             <div
                                                 key={index}
-                                                className={`flex ${msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start'} mb-2`}
+                                                className={`flex ${msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start'}`}
                                             >
                                                 <p className={`px-3 py-1.5 rounded-lg shadow-sm max-w-xs mt-1 ${msg.sender === socketRef.current.id ? 'bg-black text-white' : 'bg-white text-black'}`}>
                                                     {msg.text}
