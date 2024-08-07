@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import Image from 'next/image';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
+import { connect } from 'http2';
 
 export default function WebRTC() {
     const [messages, setMessages] = useState([]);
@@ -13,7 +14,8 @@ export default function WebRTC() {
     const [username, setUsername] = useState(''); // for user's username
     const [connected, setConnected] = useState(false); // connection status
     const [videoStarted, setVideoStarted] = useState(false); // video call status
-    const [hostClicked, setHostClicked] = useState(false); // to get username and avatar fields
+    const [buttonClicked, setButtonClicked] = useState(false); // to show username and avatar fields to host
+    const [connectClicked, setConnectClicked] = useState(false); // to show username and avatar fields
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
     const socketRef = useRef(null);
@@ -142,15 +144,17 @@ export default function WebRTC() {
 
                 {!connected && (
                     <div className="flex flex-col space-y-4 w-full max-w-xs items-center">
-                        <Button className="w-full bg-black text-white py-2" onClick={() => setConnected(true)}>
+                        <Button className="w-full bg-black text-white py-2" onClick={() => {
+                            setConnectClicked(true);
+                        }}>
                             Connect
                         </Button>
                         <Button className="w-full bg-black text-white py-2" onClick={() => {
-                            setHostClicked(true);
+                            setButtonClicked(true);
                         }}>
                             Host
                         </Button>
-                        {hostClicked && (
+                        {buttonClicked && (
                             <div className="flex flex-row py-10 justify-center items-center">
                                 <Avatar>
                                     <AvatarImage src={"https://github.com/shadcn.png"} />
@@ -170,16 +174,33 @@ export default function WebRTC() {
                                     }}>Enter</Button>
                             </div>
                         )}
+                        {connectClicked && (
+                            <div className="flex flex-row py-10 justify-center items-center">
+                                <Avatar>
+                                    <AvatarImage src={"https://github.com/shadcn.png"} />
+                                    <AvatarFallback>CN</AvatarFallback>
+                                </Avatar>
+                                <Input
+                                    className="mx-4 my-1.5"
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    placeholder="Your name please..." />
+                                <Button
+                                    size="sm"
+                                    onClick={() => {
+                                        setConnected(true);
+                                    }}>Enter</Button>
+                            </div>
+                        )}
                     </div>
                 )}
-
                 {connected && (
                     <div className="w-full mt-4 relative">
                         <div className="absolute inset-0 bg-cover bg-center rounded-md" style={{ backgroundImage: `url('/images/image.jpg')`, height: '70vh' }}>
                             <div className="relative z-10 w-full h-full flex flex-col">
                                 <div className="flex-grow overflow-y-auto p-4 bg-white bg-opacity-10 rounded-t-lg scrollbar scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
                                     <div className="px-2.5 py-2 flex items-center justify-between bg-black bg-opacity-10 rounded-lg sticky top-0">
-                                        {/* <h2 className="text-black">Chat</h2> */}
                                         <Avatar className="mr-2">
                                             <AvatarImage src="https://github.com/shadcn.png" />
                                             <AvatarFallback>{username[0]?.toUpperCase()}</AvatarFallback>

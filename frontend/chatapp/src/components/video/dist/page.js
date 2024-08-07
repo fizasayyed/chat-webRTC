@@ -59,14 +59,15 @@ function WebRTC() {
     var _d = react_1.useState(''), username = _d[0], setUsername = _d[1]; // for user's username
     var _e = react_1.useState(false), connected = _e[0], setConnected = _e[1]; // connection status
     var _f = react_1.useState(false), videoStarted = _f[0], setVideoStarted = _f[1]; // video call status
-    var _g = react_1.useState(false), hostClicked = _g[0], setHostClicked = _g[1]; // to get username and avatar fields
+    var _g = react_1.useState(false), buttonClicked = _g[0], setButtonClicked = _g[1]; // to show username and avatar fields to host
+    var _h = react_1.useState(false), connectClicked = _h[0], setConnectClicked = _h[1]; // to show username and avatar fields
     var localVideoRef = react_1.useRef(null);
     var remoteVideoRef = react_1.useRef(null);
     var socketRef = react_1.useRef(null);
     var peerRef = react_1.useRef(null);
     var localStreamRef = react_1.useRef(null);
     var messagesEndRef = react_1.useRef(null);
-    var _h = react_1.useState(false), isHost = _h[0], setIsHost = _h[1]; // To identify if the client is a host
+    var _j = react_1.useState(false), isHost = _j[0], setIsHost = _j[1]; // To identify if the client is a host
     react_1.useEffect(function () {
         // Initialize socket connection
         socketRef.current = socket_io_client_1["default"].connect('http://192.168.5.183:4000');
@@ -233,11 +234,13 @@ function WebRTC() {
         React.createElement("main", { className: "flex-grow flex flex-col items-center py-6 px-4" },
             React.createElement("p", { className: "text-center mb-8" }, "Connect with your friends through chat or video call."),
             !connected && (React.createElement("div", { className: "flex flex-col space-y-4 w-full max-w-xs items-center" },
-                React.createElement(button_1.Button, { className: "w-full bg-black text-white py-2", onClick: function () { return setConnected(true); } }, "Connect"),
                 React.createElement(button_1.Button, { className: "w-full bg-black text-white py-2", onClick: function () {
-                        setHostClicked(true);
+                        setConnectClicked(true);
+                    } }, "Connect"),
+                React.createElement(button_1.Button, { className: "w-full bg-black text-white py-2", onClick: function () {
+                        setButtonClicked(true);
                     } }, "Host"),
-                hostClicked && (React.createElement("div", { className: "flex flex-row py-10 justify-center items-center" },
+                buttonClicked && (React.createElement("div", { className: "flex flex-row py-10 justify-center items-center" },
                     React.createElement(avatar_1.Avatar, null,
                         React.createElement(avatar_1.AvatarImage, { src: "https://github.com/shadcn.png" }),
                         React.createElement(avatar_1.AvatarFallback, null, "CN")),
@@ -245,6 +248,14 @@ function WebRTC() {
                     React.createElement(button_1.Button, { size: "sm", onClick: function () {
                             setConnected(true);
                             setIsHost(true);
+                        } }, "Enter"))),
+                connectClicked && (React.createElement("div", { className: "flex flex-row py-10 justify-center items-center" },
+                    React.createElement(avatar_1.Avatar, null,
+                        React.createElement(avatar_1.AvatarImage, { src: "https://github.com/shadcn.png" }),
+                        React.createElement(avatar_1.AvatarFallback, null, "CN")),
+                    React.createElement(input_1.Input, { className: "mx-4 my-1.5", type: "text", value: username, onChange: function (e) { return setUsername(e.target.value); }, placeholder: "Your name please..." }),
+                    React.createElement(button_1.Button, { size: "sm", onClick: function () {
+                            setConnected(true);
                         } }, "Enter"))))),
             connected && (React.createElement("div", { className: "w-full mt-4 relative" },
                 React.createElement("div", { className: "absolute inset-0 bg-cover bg-center rounded-md", style: { backgroundImage: "url('/images/image.jpg')", height: '70vh' } },
