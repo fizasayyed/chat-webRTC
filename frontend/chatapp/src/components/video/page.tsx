@@ -26,8 +26,8 @@ export default function WebRTC() {
 
     useEffect(() => {
         // Initialize socket connection
-        socketRef.current = io.connect('http://192.168.5.183:4000');
-
+        // socketRef.current = io.connect('http://192.168.5.183:4000');
+        socketRef.current = io.connect('http://localhost:4000');
         // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
@@ -47,6 +47,11 @@ export default function WebRTC() {
     }, [messages]);
 
     const startMedia = async () => {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            console.error('Media Devices API is not supported in this browser.');
+            return;
+        }
+
         try {
             localStreamRef.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             localVideoRef.current.srcObject = localStreamRef.current;
@@ -55,6 +60,7 @@ export default function WebRTC() {
             console.error('Error accessing media devices.', error);
         }
     };
+
 
     const createPeerConnection = () => {
         peerRef.current = new RTCPeerConnection({
@@ -226,7 +232,7 @@ export default function WebRTC() {
                                             <Image src="/images/video-camera.png" alt="video camera" height="20" width="20" />
                                         </Button>
                                     </div>
-                                    <div className="space-y-1 px-2">
+                                    <div className={`space-y-1 px-2 ${videoStarted ? 'hidden' : ''}`}>
                                         {messages.map((msg, index) => (
                                             <div
                                                 key={index}
@@ -238,11 +244,11 @@ export default function WebRTC() {
                                                 <div ref={messagesEndRef} />
                                             </div>
                                         ))}
-                                        <video ref={localVideoRef} autoPlay muted className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
-                                        <video ref={remoteVideoRef} autoPlay className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
                                     </div>
+                                    <video ref={localVideoRef} autoPlay muted className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
+                                    <video ref={remoteVideoRef} autoPlay className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
                                 </div>
-                                <div className="flex p-2 mt-auto bg-black bg-opacity-10 border-t border-gray-300 rounded-b-lg">
+                                <div className={`flex p-2 mt-auto bg-black bg-opacity-10 border-t border-gray-300 rounded-b-lg ${videoStarted ? 'hidden' : ''}`}>
                                     <Input
                                         type="text"
                                         value={newMessage}

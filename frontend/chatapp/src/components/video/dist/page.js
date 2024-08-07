@@ -70,7 +70,8 @@ function WebRTC() {
     var _j = react_1.useState(false), isHost = _j[0], setIsHost = _j[1]; // To identify if the client is a host
     react_1.useEffect(function () {
         // Initialize socket connection
-        socketRef.current = socket_io_client_1["default"].connect('http://192.168.5.183:4000');
+        // socketRef.current = io.connect('http://192.168.5.183:4000');
+        socketRef.current = socket_io_client_1["default"].connect('http://localhost:4000');
         // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
@@ -90,19 +91,25 @@ function WebRTC() {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 2, , 3]);
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        console.error('Media Devices API is not supported in this browser.');
+                        return [2 /*return*/];
+                    }
+                    _b.label = 1;
+                case 1:
+                    _b.trys.push([1, 3, , 4]);
                     _a = localStreamRef;
                     return [4 /*yield*/, navigator.mediaDevices.getUserMedia({ video: true, audio: true })];
-                case 1:
+                case 2:
                     _a.current = _b.sent();
                     localVideoRef.current.srcObject = localStreamRef.current;
                     createPeerConnection(); // Setup peer connection when media is obtained
-                    return [3 /*break*/, 3];
-                case 2:
+                    return [3 /*break*/, 4];
+                case 3:
                     error_1 = _b.sent();
                     console.error('Error accessing media devices.', error_1);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
         });
     }); };
@@ -280,13 +287,12 @@ function WebRTC() {
                                         }
                                     }, variant: "ghost", size: "sm" },
                                     React.createElement(image_1["default"], { src: "/images/video-camera.png", alt: "video camera", height: "20", width: "20" }))),
-                            React.createElement("div", { className: "space-y-1 px-2" },
-                                messages.map(function (msg, index) { return (React.createElement("div", { key: index, className: "flex " + (msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start') },
-                                    React.createElement("p", { className: "px-3 py-1.5 rounded-lg shadow-sm max-w-xs mt-1 " + (msg.sender === socketRef.current.id ? 'bg-black text-white' : 'bg-white text-black') }, msg.text),
-                                    React.createElement("div", { ref: messagesEndRef }))); }),
-                                React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }),
-                                React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }))),
-                        React.createElement("div", { className: "flex p-2 mt-auto bg-black bg-opacity-10 border-t border-gray-300 rounded-b-lg" },
+                            React.createElement("div", { className: "space-y-1 px-2 " + (videoStarted ? 'hidden' : '') }, messages.map(function (msg, index) { return (React.createElement("div", { key: index, className: "flex " + (msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start') },
+                                React.createElement("p", { className: "px-3 py-1.5 rounded-lg shadow-sm max-w-xs mt-1 " + (msg.sender === socketRef.current.id ? 'bg-black text-white' : 'bg-white text-black') }, msg.text),
+                                React.createElement("div", { ref: messagesEndRef }))); })),
+                            React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') }),
+                            React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full " + (videoStarted ? 'block' : 'hidden') })),
+                        React.createElement("div", { className: "flex p-2 mt-auto bg-black bg-opacity-10 border-t border-gray-300 rounded-b-lg " + (videoStarted ? 'hidden' : '') },
                             React.createElement(input_1.Input, { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-1 py-1 rounded backdrop-blur-lg border border-gray-300", onKeyDown: function (e) {
                                     if (e.key === "Enter")
                                         handleSendMessage();

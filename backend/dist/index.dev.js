@@ -13,7 +13,8 @@ app.use(cors());
 var server = http.createServer(app);
 var io = socketIO(server, {
   cors: {
-    origin: "http://192.168.5.183:3000",
+    // origin: "http://192.168.5.183:3000",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     allowedHeaders: "*"
   }
@@ -44,8 +45,9 @@ io.on("connection", function (socket) {
   socket.on("disconnect", function () {
     console.log("A user disconnected");
   });
-});
-var HOST = "192.168.5.183";
+}); // const HOST = "192.168.5.183";
+
+var HOST = "localhost";
 var PORT = 4000;
 server.listen(PORT, HOST, function () {
   console.log("Server is listening on http://".concat(HOST, ":").concat(PORT));
