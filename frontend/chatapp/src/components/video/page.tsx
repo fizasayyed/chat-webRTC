@@ -6,23 +6,24 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import Image from 'next/image';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
-import { connect } from 'http2';
+import DropdownMenuRadioGroupDemo from '../dropdown';
 
 export default function WebRTC() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [username, setUsername] = useState(''); // for user's username
+    const [avatarUrl, setAvatarUrl] = useState("");
     const [connected, setConnected] = useState(false); // connection status
     const [videoStarted, setVideoStarted] = useState(false); // video call status
     const [buttonClicked, setButtonClicked] = useState(false); // to show username and avatar fields to host
     const [connectClicked, setConnectClicked] = useState(false); // to show username and avatar fields
+    const [isHost, setIsHost] = useState(false); // To identify if the client is a host
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
     const socketRef = useRef(null);
     const peerRef = useRef(null);
     const localStreamRef = useRef(null);
     const messagesEndRef = useRef(null);
-    const [isHost, setIsHost] = useState(false); // To identify if the client is a host
 
     useEffect(() => {
         // Initialize socket connection
@@ -162,16 +163,21 @@ export default function WebRTC() {
                         </Button>
                         {buttonClicked && (
                             <div className="flex flex-row py-10 justify-center items-center">
-                                <Avatar>
-                                    <AvatarImage src={"https://github.com/shadcn.png"} />
-                                    <AvatarFallback>CN</AvatarFallback>
-                                </Avatar>
+                                {!avatarUrl && (
+                                    <DropdownMenuRadioGroupDemo setAvatarUrl={setAvatarUrl} />
+                                )}
+                                {avatarUrl && (
+                                    <Avatar>
+                                        <AvatarImage src={avatarUrl} />
+                                        <AvatarFallback>CN</AvatarFallback>
+                                    </Avatar>
+                                )}
                                 <Input
-                                    className="mx-4 my-1.5"
+                                    className="mx-2 my-1.5"
                                     type="text"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="Your name please..." />
+                                    placeholder="Name please..." />
                                 <Button
                                     size="sm"
                                     onClick={() => {
@@ -182,10 +188,15 @@ export default function WebRTC() {
                         )}
                         {connectClicked && (
                             <div className="flex flex-row py-10 justify-center items-center">
-                                <Avatar>
-                                    <AvatarImage src={"https://github.com/shadcn.png"} />
-                                    <AvatarFallback>CN</AvatarFallback>
-                                </Avatar>
+                                {!avatarUrl && (
+                                    <DropdownMenuRadioGroupDemo setAvatarUrl={setAvatarUrl} />
+                                )}
+                                {avatarUrl && (
+                                    <Avatar>
+                                        <AvatarImage src={avatarUrl} />
+                                        <AvatarFallback>CN</AvatarFallback>
+                                    </Avatar>
+                                )}
                                 <Input
                                     className="mx-4 my-1.5"
                                     type="text"
@@ -208,7 +219,7 @@ export default function WebRTC() {
                                 <div className="flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
                                     <div className="px-2.5 py-2 flex items-center bg-black sticky top-0">
                                         <Avatar className="mr-2">
-                                            <AvatarImage src="https://github.com/shadcn.png" />
+                                            <AvatarImage src={avatarUrl} />
                                             <AvatarFallback>{username[0]?.toUpperCase()}</AvatarFallback>
                                         </Avatar>
                                         <h2 className="text-white text-lg pl-2">{username}</h2>
@@ -245,8 +256,12 @@ export default function WebRTC() {
                                             </div>
                                         ))}
                                     </div>
-                                    <video ref={localVideoRef} autoPlay muted className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
-                                    <video ref={remoteVideoRef} autoPlay className={`w-full ${videoStarted ? 'block' : 'hidden'}`} />
+                                    {videoStarted && (
+                                        <div className="flex flex-col h-auto overflow-y-hidden">
+                                            <video ref={localVideoRef} autoPlay muted className={`w-full h-[30vh] ${videoStarted ? 'block' : 'hidden'}`} />
+                                            <video ref={remoteVideoRef} autoPlay className={`w-full h-[30vh] ${videoStarted ? 'block' : 'hidden'}`} />
+                                        </div>
+                                    )}
                                 </div>
                                 <div className={`flex p-2 mt-auto bg-black bg-opacity-10 border-t border-gray-300 rounded-b-lg ${videoStarted ? 'hidden' : ''}`}>
                                     <Input
