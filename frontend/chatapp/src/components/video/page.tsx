@@ -12,7 +12,7 @@ export default function WebRTC() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [username, setUsername] = useState(''); // for user's username
-    const [avatarUrl, setAvatarUrl] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState(""); // get url from dropdown
     const [connected, setConnected] = useState(false); // connection status
     const [videoStarted, setVideoStarted] = useState(false); // video call status
     const [buttonClicked, setButtonClicked] = useState(false); // to show username and avatar fields to host
@@ -27,8 +27,8 @@ export default function WebRTC() {
 
     useEffect(() => {
         // Initialize socket connection
-        // socketRef.current = io.connect('http://192.168.5.183:4000');
-        socketRef.current = io.connect('http://localhost:4000');
+        socketRef.current = io.connect('http://192.168.5.183:4000');
+        // socketRef.current = io.connect('http://localhost:4000');
         // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
@@ -61,7 +61,6 @@ export default function WebRTC() {
             console.error('Error accessing media devices.', error);
         }
     };
-
 
     const createPeerConnection = () => {
         peerRef.current = new RTCPeerConnection({
@@ -129,7 +128,7 @@ export default function WebRTC() {
                 text: newMessage,
                 sender: socketRef.current.id,
                 username: username,
-                avatar: 'https://github.com/shadcn.png'
+                avatar: avatarUrl
             };
             socketRef.current.emit('message', message);
             setMessages(prevMessages => [...prevMessages, message]);
@@ -218,11 +217,11 @@ export default function WebRTC() {
                             <div className="relative z-10 w-full h-full flex flex-col">
                                 <div className="flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
                                     <div className="px-2.5 py-2 flex items-center bg-black sticky top-0">
-                                        <Avatar className="mr-2">
+                                        {/* <Avatar className="mr-2">
                                             <AvatarImage src={avatarUrl} />
                                             <AvatarFallback>{username[0]?.toUpperCase()}</AvatarFallback>
-                                        </Avatar>
-                                        <h2 className="text-white text-lg pl-2">{username}</h2>
+                                        </Avatar> */}
+                                        <h2 className="text-white text-lg pl-2">Chat</h2>
                                         <Button
                                             className={`bg-white text-white px-4 py-2 ml-auto rounded ${videoStarted ? 'bg-red-500' : ''}`}
                                             onClick={() => {
@@ -249,8 +248,12 @@ export default function WebRTC() {
                                                 key={index}
                                                 className={`flex ${msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start'}`}
                                             >
-                                                <p className={`px-3 py-1.5 rounded-lg shadow-sm max-w-xs mt-1 ${msg.sender === socketRef.current.id ? 'bg-black text-white' : 'bg-white text-black'}`}>
-                                                    {msg.text}
+                                                <Avatar className={`mr-1 mt-1`}>
+                                                    <AvatarImage src={msg.avatar} />
+                                                    <AvatarFallback>{username[0]?.toUpperCase()}</AvatarFallback>
+                                                </Avatar>
+                                                <p className={`px-3 py-1.5 rounded-lg shadow-sm max-w-xs mt-1 ${msg.sender === socketRef.current.id ? 'bg-black text-white justify-end' : 'bg-white text-black justify-start'} `}>
+                                                    <small className="text-gray-400 text-xs">{msg.username}: </small>{msg.text}
                                                 </p>
                                                 <div ref={messagesEndRef} />
                                             </div>
@@ -281,7 +284,8 @@ export default function WebRTC() {
                             </div>
                         </div>
                     </div>
-                )}
+                )
+                }
             </main >
         </div >
     );

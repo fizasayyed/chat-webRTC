@@ -54,16 +54,15 @@ var avatar_1 = require("../ui/avatar");
 var dropdown_1 = require("../dropdown");
 function WebRTC() {
     var _this = this;
-    var _a;
-    var _b = react_1.useState([]), messages = _b[0], setMessages = _b[1];
-    var _c = react_1.useState(''), newMessage = _c[0], setNewMessage = _c[1];
-    var _d = react_1.useState(''), username = _d[0], setUsername = _d[1]; // for user's username
-    var _e = react_1.useState(""), avatarUrl = _e[0], setAvatarUrl = _e[1];
-    var _f = react_1.useState(false), connected = _f[0], setConnected = _f[1]; // connection status
-    var _g = react_1.useState(false), videoStarted = _g[0], setVideoStarted = _g[1]; // video call status
-    var _h = react_1.useState(false), buttonClicked = _h[0], setButtonClicked = _h[1]; // to show username and avatar fields to host
-    var _j = react_1.useState(false), connectClicked = _j[0], setConnectClicked = _j[1]; // to show username and avatar fields
-    var _k = react_1.useState(false), isHost = _k[0], setIsHost = _k[1]; // To identify if the client is a host
+    var _a = react_1.useState([]), messages = _a[0], setMessages = _a[1];
+    var _b = react_1.useState(''), newMessage = _b[0], setNewMessage = _b[1];
+    var _c = react_1.useState(''), username = _c[0], setUsername = _c[1]; // for user's username
+    var _d = react_1.useState(""), avatarUrl = _d[0], setAvatarUrl = _d[1]; // get url from dropdown
+    var _e = react_1.useState(false), connected = _e[0], setConnected = _e[1]; // connection status
+    var _f = react_1.useState(false), videoStarted = _f[0], setVideoStarted = _f[1]; // video call status
+    var _g = react_1.useState(false), buttonClicked = _g[0], setButtonClicked = _g[1]; // to show username and avatar fields to host
+    var _h = react_1.useState(false), connectClicked = _h[0], setConnectClicked = _h[1]; // to show username and avatar fields
+    var _j = react_1.useState(false), isHost = _j[0], setIsHost = _j[1]; // To identify if the client is a host
     var localVideoRef = react_1.useRef(null);
     var remoteVideoRef = react_1.useRef(null);
     var socketRef = react_1.useRef(null);
@@ -72,8 +71,8 @@ function WebRTC() {
     var messagesEndRef = react_1.useRef(null);
     react_1.useEffect(function () {
         // Initialize socket connection
-        // socketRef.current = io.connect('http://192.168.5.183:4000');
-        socketRef.current = socket_io_client_1["default"].connect('http://localhost:4000');
+        socketRef.current = socket_io_client_1["default"].connect('http://192.168.5.183:4000');
+        // socketRef.current = io.connect('http://localhost:4000');
         // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
@@ -226,7 +225,7 @@ function WebRTC() {
                 text: newMessage,
                 sender: socketRef.current.id,
                 username: username,
-                avatar: 'https://github.com/shadcn.png'
+                avatar: avatarUrl
             };
             socketRef.current.emit('message', message_1);
             setMessages(function (prevMessages) { return __spreadArrays(prevMessages, [message_1]); });
@@ -273,10 +272,7 @@ function WebRTC() {
                     React.createElement("div", { className: "relative z-10 w-full h-full flex flex-col" },
                         React.createElement("div", { className: "flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100" },
                             React.createElement("div", { className: "px-2.5 py-2 flex items-center bg-black sticky top-0" },
-                                React.createElement(avatar_1.Avatar, { className: "mr-2" },
-                                    React.createElement(avatar_1.AvatarImage, { src: avatarUrl }),
-                                    React.createElement(avatar_1.AvatarFallback, null, (_a = username[0]) === null || _a === void 0 ? void 0 : _a.toUpperCase())),
-                                React.createElement("h2", { className: "text-white text-lg pl-2" }, username),
+                                React.createElement("h2", { className: "text-white text-lg pl-2" }, "Chat"),
                                 React.createElement(button_1.Button, { className: "bg-white text-white px-4 py-2 ml-auto rounded " + (videoStarted ? 'bg-red-500' : ''), onClick: function () {
                                         if (videoStarted) {
                                             setVideoStarted(false);
@@ -291,9 +287,19 @@ function WebRTC() {
                                         }
                                     }, variant: "ghost", size: "sm" },
                                     React.createElement(image_1["default"], { src: "/images/video-camera.png", alt: "video camera", height: "20", width: "20" }))),
-                            React.createElement("div", { className: "space-y-1 px-2 " + (videoStarted ? 'hidden' : '') }, messages.map(function (msg, index) { return (React.createElement("div", { key: index, className: "flex " + (msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start') },
-                                React.createElement("p", { className: "px-3 py-1.5 rounded-lg shadow-sm max-w-xs mt-1 " + (msg.sender === socketRef.current.id ? 'bg-black text-white' : 'bg-white text-black') }, msg.text),
-                                React.createElement("div", { ref: messagesEndRef }))); })),
+                            React.createElement("div", { className: "space-y-1 px-2 " + (videoStarted ? 'hidden' : '') }, messages.map(function (msg, index) {
+                                var _a;
+                                return (React.createElement("div", { key: index, className: "flex " + (msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start') },
+                                    React.createElement(avatar_1.Avatar, { className: "mr-1 mt-1" },
+                                        React.createElement(avatar_1.AvatarImage, { src: msg.avatar }),
+                                        React.createElement(avatar_1.AvatarFallback, null, (_a = username[0]) === null || _a === void 0 ? void 0 : _a.toUpperCase())),
+                                    React.createElement("p", { className: "px-3 py-1.5 rounded-lg shadow-sm max-w-xs mt-1 " + (msg.sender === socketRef.current.id ? 'bg-black text-white justify-end' : 'bg-white text-black justify-start') + " " },
+                                        React.createElement("small", { className: "text-gray-400 text-xs" },
+                                            msg.username,
+                                            ": "),
+                                        msg.text),
+                                    React.createElement("div", { ref: messagesEndRef })));
+                            })),
                             videoStarted && (React.createElement("div", { className: "flex flex-col h-auto overflow-y-hidden" },
                                 React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full h-[30vh] " + (videoStarted ? 'block' : 'hidden') }),
                                 React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full h-[30vh] " + (videoStarted ? 'block' : 'hidden') })))),
