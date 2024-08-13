@@ -263,7 +263,7 @@ function WebRTC() {
                     avatarUrl && (React.createElement(avatar_1.Avatar, null,
                         React.createElement(avatar_1.AvatarImage, { src: avatarUrl }),
                         React.createElement(avatar_1.AvatarFallback, null, "CN"))),
-                    React.createElement(input_1.Input, { className: "mx-4 my-1.5", type: "text", value: username, onChange: function (e) { return setUsername(e.target.value); }, placeholder: "Your name please..." }),
+                    React.createElement(input_1.Input, { className: "mx-2 my-1.5", type: "text", value: username, onChange: function (e) { return setUsername(e.target.value); }, placeholder: "Your name please..." }),
                     React.createElement(button_1.Button, { size: "sm", onClick: function () {
                             setConnected(true);
                         } }, "Enter"))))),
@@ -271,7 +271,7 @@ function WebRTC() {
                 React.createElement("div", { className: "absolute inset-0 bg-cover bg-center rounded-md", style: { backgroundImage: "url('/images/image.jpg')", height: '70vh' } },
                     React.createElement("div", { className: "relative z-10 w-full h-full flex flex-col" },
                         React.createElement("div", { className: "flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100" },
-                            React.createElement("div", { className: "px-2.5 py-2 flex items-center bg-black sticky top-0" },
+                            React.createElement("div", { className: "px-2.5 py-2 flex items-center bg-black sticky top-0 z-10" },
                                 React.createElement("h2", { className: "text-white text-lg pl-2" }, "Chat"),
                                 React.createElement(button_1.Button, { className: "bg-white text-white px-4 py-2 ml-auto rounded " + (videoStarted ? 'bg-red-500' : ''), onClick: function () {
                                         if (videoStarted) {
@@ -289,8 +289,8 @@ function WebRTC() {
                                     React.createElement(image_1["default"], { src: "/images/video-camera.png", alt: "video camera", height: "20", width: "20" }))),
                             React.createElement("div", { className: "space-y-1 px-2 " + (videoStarted ? 'hidden' : '') }, messages.map(function (msg, index) {
                                 var _a;
-                                return (React.createElement("div", { key: index, className: "flex " + (msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start') },
-                                    React.createElement(avatar_1.Avatar, { className: "mr-1 mt-1" },
+                                return (React.createElement("div", { key: index, className: "flex overflow-y-auto " + (msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start') },
+                                    React.createElement(avatar_1.Avatar, { className: "mr-1 mt-1 w-8 h-8" },
                                         React.createElement(avatar_1.AvatarImage, { src: msg.avatar }),
                                         React.createElement(avatar_1.AvatarFallback, null, (_a = username[0]) === null || _a === void 0 ? void 0 : _a.toUpperCase())),
                                     React.createElement("p", { className: "px-3 py-1.5 rounded-lg shadow-sm max-w-xs mt-1 " + (msg.sender === socketRef.current.id ? 'bg-black text-white justify-end' : 'bg-white text-black justify-start') + " " },

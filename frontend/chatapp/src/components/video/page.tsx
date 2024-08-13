@@ -197,7 +197,7 @@ export default function WebRTC() {
                                     </Avatar>
                                 )}
                                 <Input
-                                    className="mx-4 my-1.5"
+                                    className="mx-2 my-1.5"
                                     type="text"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
@@ -216,11 +216,7 @@ export default function WebRTC() {
                         <div className="absolute inset-0 bg-cover bg-center rounded-md" style={{ backgroundImage: `url('/images/image.jpg')`, height: '70vh' }}>
                             <div className="relative z-10 w-full h-full flex flex-col">
                                 <div className="flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
-                                    <div className="px-2.5 py-2 flex items-center bg-black sticky top-0">
-                                        {/* <Avatar className="mr-2">
-                                            <AvatarImage src={avatarUrl} />
-                                            <AvatarFallback>{username[0]?.toUpperCase()}</AvatarFallback>
-                                        </Avatar> */}
+                                    <div className="px-2.5 py-2 flex items-center bg-black sticky top-0 z-10">
                                         <h2 className="text-white text-lg pl-2">Chat</h2>
                                         <Button
                                             className={`bg-white text-white px-4 py-2 ml-auto rounded ${videoStarted ? 'bg-red-500' : ''}`}
@@ -246,9 +242,9 @@ export default function WebRTC() {
                                         {messages.map((msg, index) => (
                                             <div
                                                 key={index}
-                                                className={`flex ${msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start'}`}
+                                                className={`flex overflow-y-auto ${msg.sender === socketRef.current.id ? 'justify-end' : 'justify-start'}`}
                                             >
-                                                <Avatar className={`mr-1 mt-1`}>
+                                                <Avatar className={`mr-1 mt-1 w-8 h-8`}>
                                                     <AvatarImage src={msg.avatar} />
                                                     <AvatarFallback>{username[0]?.toUpperCase()}</AvatarFallback>
                                                 </Avatar>
