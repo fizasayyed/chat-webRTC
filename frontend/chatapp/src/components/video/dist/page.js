@@ -71,9 +71,7 @@ function WebRTC() {
     var localStreamRef = react_1.useRef(null);
     var messagesEndRef = react_1.useRef(null);
     react_1.useEffect(function () {
-        // Initialize socket connection
         socketRef.current = socket_io_client_1["default"].connect('http://localhost:4000');
-        // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
         socketRef.current.on('candidate', handleNewICECandidateMsg);

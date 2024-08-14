@@ -27,9 +27,7 @@ export default function WebRTC() {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
-        // Initialize socket connection
         socketRef.current = io.connect('http://localhost:4000');
-        // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
         socketRef.current.on('candidate', handleNewICECandidateMsg);
