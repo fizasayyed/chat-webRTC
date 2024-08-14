@@ -51,7 +51,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const HOST = "192.168.5.183";
+const HOST = "192.168.3.198";
 // const HOST = "localhost";
 const PORT = 4000;
 

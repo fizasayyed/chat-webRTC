@@ -27,7 +27,7 @@ export default function WebRTC() {
 
     useEffect(() => {
         // Initialize socket connection
-        socketRef.current = io.connect('http://192.168.5.183:4000');
+        socketRef.current = io.connect('http://192.168.3.198:4000');
         // socketRef.current = io.connect('http://localhost:4000');
         // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
@@ -256,10 +256,27 @@ export default function WebRTC() {
                                         ))}
                                     </div>
                                     {videoStarted && (
-                                        <div className="flex flex-col h-auto overflow-y-hidden">
-                                            <video ref={localVideoRef} autoPlay muted className={`w-full h-[30vh] ${videoStarted ? 'block' : 'hidden'}`} />
-                                            <video ref={remoteVideoRef} autoPlay className={`w-full h-[30vh] ${videoStarted ? 'block' : 'hidden'}`} />
+                                        <><div className="flex flex-col bg-black overflow-y-hidden">
+                                            <video ref={localVideoRef} autoPlay muted className={`w-full mt-2 h-[25vh] ${videoStarted ? 'block' : 'hidden'}`} />
+                                            <video ref={remoteVideoRef} autoPlay className={`w-full h-[25vh] ${videoStarted ? 'block' : 'hidden'}`} />
                                         </div>
+                                            <div className="flex flex-row justify-center h-18">
+                                                <div className='h-16 w-full flex rounded justify-center items-center'> <Button
+                                                    className={`bg-white text-white rounded mr-4`}
+                                                    variant="ghost"
+                                                    size="lg"
+                                                >
+                                                    <Image src="/images/mute.png" alt="video camera" height="20" width="20" />
+                                                </Button>
+                                                    <Button
+                                                        className={`bg-white text-white rounded`}
+                                                        variant="ghost"
+                                                        size="lg"
+                                                    >
+                                                        <Image src="/images/phone-call-end.png" alt="video camera" height="20" width="20" />
+                                                    </Button></div>
+                                            </div>
+                                        </>
                                     )}
                                 </div>
                                 <div className={`flex p-2 mt-auto bg-black bg-opacity-10 border-t border-gray-300 rounded-b-lg ${videoStarted ? 'hidden' : ''}`}>

@@ -71,7 +71,7 @@ function WebRTC() {
     var messagesEndRef = react_1.useRef(null);
     react_1.useEffect(function () {
         // Initialize socket connection
-        socketRef.current = socket_io_client_1["default"].connect('http://192.168.5.183:4000');
+        socketRef.current = socket_io_client_1["default"].connect('http://192.168.3.198:4000');
         // socketRef.current = io.connect('http://localhost:4000');
         // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
@@ -300,9 +300,17 @@ function WebRTC() {
                                         msg.text),
                                     React.createElement("div", { ref: messagesEndRef })));
                             })),
-                            videoStarted && (React.createElement("div", { className: "flex flex-col h-auto overflow-y-hidden" },
-                                React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full h-[30vh] " + (videoStarted ? 'block' : 'hidden') }),
-                                React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full h-[30vh] " + (videoStarted ? 'block' : 'hidden') })))),
+                            videoStarted && (React.createElement(React.Fragment, null,
+                                React.createElement("div", { className: "flex flex-col bg-black overflow-y-hidden" },
+                                    React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full mt-2 h-[25vh] " + (videoStarted ? 'block' : 'hidden') }),
+                                    React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full h-[25vh] " + (videoStarted ? 'block' : 'hidden') })),
+                                React.createElement("div", { className: "flex flex-row justify-center h-18" },
+                                    React.createElement("div", { className: 'h-16 w-full flex rounded justify-center items-center' },
+                                        " ",
+                                        React.createElement(button_1.Button, { className: "bg-white text-white rounded mr-4", variant: "ghost", size: "lg" },
+                                            React.createElement(image_1["default"], { src: "/images/mute.png", alt: "video camera", height: "20", width: "20" })),
+                                        React.createElement(button_1.Button, { className: "bg-white text-white rounded", variant: "ghost", size: "lg" },
+                                            React.createElement(image_1["default"], { src: "/images/phone-call-end.png", alt: "video camera", height: "20", width: "20" }))))))),
                         React.createElement("div", { className: "flex p-2 mt-auto bg-black bg-opacity-10 border-t border-gray-300 rounded-b-lg " + (videoStarted ? 'hidden' : '') },
                             React.createElement(input_1.Input, { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-1 py-1 rounded backdrop-blur-lg border border-gray-300", onKeyDown: function (e) {
                                     if (e.key === "Enter")

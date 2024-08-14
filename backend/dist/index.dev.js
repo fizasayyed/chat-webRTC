@@ -48,7 +48,7 @@ io.on("connection", function (socket) {
     console.log("A user disconnected");
   });
 });
-var HOST = "192.168.5.183"; // const HOST = "localhost";
+var HOST = "192.168.3.198"; // const HOST = "localhost";
 
 var PORT = 4000;
 server.listen(PORT, HOST, function () {
