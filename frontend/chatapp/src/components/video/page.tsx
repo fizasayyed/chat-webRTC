@@ -1,7 +1,7 @@
 /* eslint-disable */
 "use client";
 import { useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
+import * as io from "socket.io-client";
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import Image from 'next/image';
