@@ -18,6 +18,7 @@ export default function WebRTC() {
     const [buttonClicked, setButtonClicked] = useState(false); // to show username and avatar fields to host
     const [connectClicked, setConnectClicked] = useState(false); // to show username and avatar fields
     const [isHost, setIsHost] = useState(false); // To identify if the client is a host
+    const [isAudioMuted, setIsAudioMuted] = useState(false); // To track video mute/ unmute
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
     const socketRef = useRef(null);
@@ -26,9 +27,7 @@ export default function WebRTC() {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
-        // Initialize socket connection
         socketRef.current = io.connect('http://localhost:4000');
-        // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
         socketRef.current.on('candidate', handleNewICECandidateMsg);
@@ -59,6 +58,22 @@ export default function WebRTC() {
         } catch (error) {
             console.error('Error accessing media devices.', error);
         }
+    };
+
+    const stopMediaTracks = (stream) => {
+        stream.getTracks().forEach((track) => track.stop());
+    };
+
+    const endCall = () => {
+        if (peerRef.current) {
+            peerRef.current.close();
+            peerRef.current = null;
+        }
+        if (localStreamRef.current) {
+            stopMediaTracks(localStreamRef.current);
+            localStreamRef.current = null;
+        }
+        setVideoStarted(false);
     };
 
     const createPeerConnection = () => {
@@ -135,6 +150,15 @@ export default function WebRTC() {
         }
     };
 
+    const toggleMuteVideo = () => {
+        if (localStreamRef.current) {
+            localStreamRef.current.getAudioTracks().forEach(track => {
+                track.enabled = !track.enabled;
+            });
+            setIsAudioMuted(prevState => !prevState);
+        }
+    };
+
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -142,11 +166,10 @@ export default function WebRTC() {
     return (
         <div className="min-h-screen flex flex-col items-center bg-gray-100">
             <header className="bg-black text-white w-full py-4 flex justify-center">
-                <h1 className="text-lg">Meet</h1>
+                <h1 className="text-lg">SneakSpeak</h1>
             </header>
             <main className="flex-grow flex flex-col items-center py-6 px-4">
-                <p className="text-center mb-8">Connect with your friends through chat or video call.</p>
-
+                <p className="text-center mb-8">Connect with anyone through Chat or Video Call(Glimpse)</p>
                 {!connected && (
                     <div className="flex flex-col space-y-4 w-full max-w-xs items-center">
                         <Button className="w-full bg-black text-white py-2" onClick={() => {
@@ -216,7 +239,7 @@ export default function WebRTC() {
                             <div className="relative z-10 w-full h-full flex flex-col">
                                 <div className="flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
                                     <div className="px-2.5 py-2 flex items-center bg-black sticky top-0 z-10">
-                                        <h2 className="text-white text-md pl-1"> {videoStarted ? 'Video Call' : 'Chat'}</h2>
+                                        <h2 className="text-white text-md pl-1"> {videoStarted ? 'Glimpse' : 'SneakSpeak'}</h2>
                                         <Button
                                             className={`bg-white text-white px-4 py-2 ml-auto rounded`}
                                             onClick={() => {
@@ -259,7 +282,7 @@ export default function WebRTC() {
                                                         ref={localVideoRef}
                                                         autoPlay
                                                         muted
-                                                        className={`w-auto h-full ${videoStarted ? 'block' : 'hidden'}`}
+                                                        className={`w-full h-full ${videoStarted ? 'block' : 'hidden'}`}
                                                     />
                                                     <span className="absolute bottom-0.5 left-0.5 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
                                                         {username || "Me"}
@@ -269,7 +292,7 @@ export default function WebRTC() {
                                                     <video
                                                         ref={remoteVideoRef}
                                                         autoPlay
-                                                        className={`w-auto h-full ${videoStarted ? 'block' : 'hidden'}`}
+                                                        className={`w-full h-full ${videoStarted ? 'block' : 'hidden'}`}
                                                     />
                                                     <span className="absolute bottom-0.5 left-0.5 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
                                                         Remote User
@@ -277,18 +300,24 @@ export default function WebRTC() {
                                                 </div>
                                             </div>
                                             <div className="flex flex-row justify-center h-18">
-                                                <div className='h-16 w-full flex rounded justify-center items-center'> <Button
-                                                    className={`bg-white text-white rounded mr-4`}
-                                                    variant="ghost"
-                                                    size="lg"
-                                                >
-                                                    <Image src="/images/mute.png" alt="video camera" height="20" width="20" />
-                                                </Button>
+                                                <div className='h-16 w-full flex rounded justify-center items-center'>
+                                                    <Button
+                                                        className="bg-white rounded mr-4"
+                                                        variant="ghost"
+                                                        size="lg"
+                                                        onClick={toggleMuteVideo}
+                                                    >
+                                                        <Image
+                                                            src={isAudioMuted ? "/images/mute.png" : "/images/voice-call.png"}
+                                                            alt={isAudioMuted ? "mute audio" : "unmute audio"}
+                                                            height="20"
+                                                            width="20" />
+                                                    </Button>
                                                     <Button
                                                         className={`bg-white text-white rounded`}
                                                         variant="ghost"
                                                         size="lg"
-                                                        onClick={() => setVideoStarted(false)}
+                                                        onClick={endCall}
                                                     >
                                                         <Image src="/images/phone-call-end.png" alt="video camera" height="20" width="20" />
                                                     </Button>
