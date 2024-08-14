@@ -27,8 +27,7 @@ export default function WebRTC() {
 
     useEffect(() => {
         // Initialize socket connection
-        socketRef.current = io.connect('http://192.168.3.198:4000');
-        // socketRef.current = io.connect('http://localhost:4000');
+        socketRef.current = io.connect('http://localhost:4000');
         // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
@@ -217,14 +216,11 @@ export default function WebRTC() {
                             <div className="relative z-10 w-full h-full flex flex-col">
                                 <div className="flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100">
                                     <div className="px-2.5 py-2 flex items-center bg-black sticky top-0 z-10">
-                                        <h2 className="text-white text-lg pl-2">Chat</h2>
+                                        <h2 className="text-white text-md pl-1"> {videoStarted ? 'Video Call' : 'Chat'}</h2>
                                         <Button
-                                            className={`bg-white text-white px-4 py-2 ml-auto rounded ${videoStarted ? 'bg-red-500' : ''}`}
+                                            className={`bg-white text-white px-4 py-2 ml-auto rounded`}
                                             onClick={() => {
-                                                if (videoStarted) {
-                                                    setVideoStarted(false);
-                                                    localStreamRef.current.getTracks().forEach((track: { stop: () => any; }) => track.stop());
-                                                } else {
+                                                if (!videoStarted) {
                                                     setVideoStarted(true);
                                                     startMedia();
                                                     if (isHost) {
@@ -256,10 +252,30 @@ export default function WebRTC() {
                                         ))}
                                     </div>
                                     {videoStarted && (
-                                        <><div className="flex flex-col bg-black overflow-y-hidden">
-                                            <video ref={localVideoRef} autoPlay muted className={`w-full mt-2 h-[25vh] ${videoStarted ? 'block' : 'hidden'}`} />
-                                            <video ref={remoteVideoRef} autoPlay className={`w-full h-[25vh] ${videoStarted ? 'block' : 'hidden'}`} />
-                                        </div>
+                                        <>
+                                            <div className="flex flex-col bg-black overflow-y-hidden">
+                                                <div className="relative w-auto mt-2 h-[24vh] rounded-md border-2 border-white mx-2">
+                                                    <video
+                                                        ref={localVideoRef}
+                                                        autoPlay
+                                                        muted
+                                                        className={`w-auto h-full ${videoStarted ? 'block' : 'hidden'}`}
+                                                    />
+                                                    <span className="absolute bottom-0.5 left-0.5 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                                                        {username || "Me"}
+                                                    </span>
+                                                </div>
+                                                <div className="relative w-auto h-[24vh] my-2 rounded-md border-2 border-white mx-2">
+                                                    <video
+                                                        ref={remoteVideoRef}
+                                                        autoPlay
+                                                        className={`w-auto h-full ${videoStarted ? 'block' : 'hidden'}`}
+                                                    />
+                                                    <span className="absolute bottom-0.5 left-0.5 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                                                        Remote User
+                                                    </span>
+                                                </div>
+                                            </div>
                                             <div className="flex flex-row justify-center h-18">
                                                 <div className='h-16 w-full flex rounded justify-center items-center'> <Button
                                                     className={`bg-white text-white rounded mr-4`}
@@ -272,9 +288,11 @@ export default function WebRTC() {
                                                         className={`bg-white text-white rounded`}
                                                         variant="ghost"
                                                         size="lg"
+                                                        onClick={() => setVideoStarted(false)}
                                                     >
                                                         <Image src="/images/phone-call-end.png" alt="video camera" height="20" width="20" />
-                                                    </Button></div>
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </>
                                     )}

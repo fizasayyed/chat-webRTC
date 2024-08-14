@@ -5,13 +5,11 @@ const cors = require("cors");
 
 const app = express();
 app.use(cors());
-
 const server = http.createServer(app);
 
 const io = socketIO(server, {
   cors: {
-    origin: "http://192.168.5.183:3000",
-    // origin: "http://localhost:3000",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     allowedHeaders: "*",
   },
@@ -51,8 +49,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const HOST = "192.168.3.198";
-// const HOST = "localhost";
+const HOST = "localhost";
 const PORT = 4000;
 
 server.listen(PORT, HOST, () => {

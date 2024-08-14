@@ -71,8 +71,7 @@ function WebRTC() {
     var messagesEndRef = react_1.useRef(null);
     react_1.useEffect(function () {
         // Initialize socket connection
-        socketRef.current = socket_io_client_1["default"].connect('http://192.168.3.198:4000');
-        // socketRef.current = io.connect('http://localhost:4000');
+        socketRef.current = socket_io_client_1["default"].connect('http://localhost:4000');
         // Set up event listeners for WebRTC signaling
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
@@ -272,13 +271,11 @@ function WebRTC() {
                     React.createElement("div", { className: "relative z-10 w-full h-full flex flex-col" },
                         React.createElement("div", { className: "flex-grow overflow-y-auto bg-white bg-opacity-10 rounded-t-lg scrollbar-thin scrollbar-slate-800 scrollbar-track-gray-100" },
                             React.createElement("div", { className: "px-2.5 py-2 flex items-center bg-black sticky top-0 z-10" },
-                                React.createElement("h2", { className: "text-white text-lg pl-2" }, "Chat"),
-                                React.createElement(button_1.Button, { className: "bg-white text-white px-4 py-2 ml-auto rounded " + (videoStarted ? 'bg-red-500' : ''), onClick: function () {
-                                        if (videoStarted) {
-                                            setVideoStarted(false);
-                                            localStreamRef.current.getTracks().forEach(function (track) { return track.stop(); });
-                                        }
-                                        else {
+                                React.createElement("h2", { className: "text-white text-md pl-1" },
+                                    " ",
+                                    videoStarted ? 'Video Call' : 'Chat'),
+                                React.createElement(button_1.Button, { className: "bg-white text-white px-4 py-2 ml-auto rounded", onClick: function () {
+                                        if (!videoStarted) {
                                             setVideoStarted(true);
                                             startMedia();
                                             if (isHost) {
@@ -302,14 +299,18 @@ function WebRTC() {
                             })),
                             videoStarted && (React.createElement(React.Fragment, null,
                                 React.createElement("div", { className: "flex flex-col bg-black overflow-y-hidden" },
-                                    React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-full mt-2 h-[25vh] " + (videoStarted ? 'block' : 'hidden') }),
-                                    React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-full h-[25vh] " + (videoStarted ? 'block' : 'hidden') })),
+                                    React.createElement("div", { className: "relative w-auto mt-2 h-[24vh] rounded-md border-2 border-white mx-2" },
+                                        React.createElement("video", { ref: localVideoRef, autoPlay: true, muted: true, className: "w-auto h-full " + (videoStarted ? 'block' : 'hidden') }),
+                                        React.createElement("span", { className: "absolute bottom-0.5 left-0.5 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded" }, username || "Me")),
+                                    React.createElement("div", { className: "relative w-auto h-[24vh] my-2 rounded-md border-2 border-white mx-2" },
+                                        React.createElement("video", { ref: remoteVideoRef, autoPlay: true, className: "w-auto h-full " + (videoStarted ? 'block' : 'hidden') }),
+                                        React.createElement("span", { className: "absolute bottom-0.5 left-0.5 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded" }, "Remote User"))),
                                 React.createElement("div", { className: "flex flex-row justify-center h-18" },
                                     React.createElement("div", { className: 'h-16 w-full flex rounded justify-center items-center' },
                                         " ",
                                         React.createElement(button_1.Button, { className: "bg-white text-white rounded mr-4", variant: "ghost", size: "lg" },
                                             React.createElement(image_1["default"], { src: "/images/mute.png", alt: "video camera", height: "20", width: "20" })),
-                                        React.createElement(button_1.Button, { className: "bg-white text-white rounded", variant: "ghost", size: "lg" },
+                                        React.createElement(button_1.Button, { className: "bg-white text-white rounded", variant: "ghost", size: "lg", onClick: function () { return setVideoStarted(false); } },
                                             React.createElement(image_1["default"], { src: "/images/phone-call-end.png", alt: "video camera", height: "20", width: "20" }))))))),
                         React.createElement("div", { className: "flex p-2 mt-auto bg-black bg-opacity-10 border-t border-gray-300 rounded-b-lg " + (videoStarted ? 'hidden' : '') },
                             React.createElement(input_1.Input, { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-1 py-1 rounded backdrop-blur-lg border border-gray-300", onKeyDown: function (e) {
