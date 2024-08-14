@@ -9,7 +9,7 @@ const server = http.createServer(app);
 
 const io = socketIO(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://sneakspeak.vercel.app",
     methods: ["GET", "POST"],
     allowedHeaders: "*",
   },
