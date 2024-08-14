@@ -49,9 +49,8 @@ io.on("connection", (socket) => {
   });
 });
 
-const HOST = "localhost";
-const PORT = 4000;
+const HOST = "https://sneakspeak-backend.vercel.app";
 
-server.listen(PORT, HOST, () => {
-  console.log(`Server is listening on http://${HOST}:${PORT}`);
+server.listen(HOST, () => {
+  console.log(`Server is listening on ${HOST} 🚀`);
 });
