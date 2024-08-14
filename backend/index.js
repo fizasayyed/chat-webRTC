@@ -5,12 +5,11 @@ const cors = require("cors");
 
 const app = express();
 app.use(cors());
-
 const server = http.createServer(app);
 
 const io = socketIO(server, {
   cors: {
-    origin: "http://192.168.5.183:3000",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     allowedHeaders: "*",
   },
@@ -37,6 +36,8 @@ io.on("connection", (socket) => {
     const messageWithSender = {
       text: message.text,
       sender: socket.id, // Include sender information
+      username: message.username,
+      avatar: message.avatar
     };
     console.log("Received message: ", messageWithSender);
     // Broadcast the message to all other connected clients
@@ -48,7 +49,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const HOST = "192.168.5.183";
+const HOST = "localhost";
 const PORT = 4000;
 
 server.listen(PORT, HOST, () => {
