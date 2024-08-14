@@ -114,6 +114,20 @@ function WebRTC() {
             }
         });
     }); };
+    var stopMediaTracks = function (stream) {
+        stream.getTracks().forEach(function (track) { return track.stop(); });
+    };
+    var endCall = function () {
+        if (peerRef.current) {
+            peerRef.current.close();
+            peerRef.current = null;
+        }
+        if (localStreamRef.current) {
+            stopMediaTracks(localStreamRef.current);
+            localStreamRef.current = null;
+        }
+        setVideoStarted(false);
+    };
     var createPeerConnection = function () {
         peerRef.current = new RTCPeerConnection({
             iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
@@ -318,7 +332,7 @@ function WebRTC() {
                                     React.createElement("div", { className: 'h-16 w-full flex rounded justify-center items-center' },
                                         React.createElement(button_1.Button, { className: "bg-white rounded mr-4", variant: "ghost", size: "lg", onClick: toggleMuteVideo },
                                             React.createElement(image_1["default"], { src: isAudioMuted ? "/images/mute.png" : "/images/voice-call.png", alt: isAudioMuted ? "mute audio" : "unmute audio", height: "20", width: "20" })),
-                                        React.createElement(button_1.Button, { className: "bg-white text-white rounded", variant: "ghost", size: "lg", onClick: function () { return setVideoStarted(false); } },
+                                        React.createElement(button_1.Button, { className: "bg-white text-white rounded", variant: "ghost", size: "lg", onClick: endCall },
                                             React.createElement(image_1["default"], { src: "/images/phone-call-end.png", alt: "video camera", height: "20", width: "20" }))))))),
                         React.createElement("div", { className: "flex p-2 mt-auto bg-black bg-opacity-10 border-t border-gray-300 rounded-b-lg " + (videoStarted ? 'hidden' : '') },
                             React.createElement(input_1.Input, { type: "text", value: newMessage, onChange: function (e) { return setNewMessage(e.target.value); }, placeholder: "Type a message...", className: "flex-grow bg-opacity-30 text-black px-1 py-1 rounded backdrop-blur-lg border border-gray-300", onKeyDown: function (e) {

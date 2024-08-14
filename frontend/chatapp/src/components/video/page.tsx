@@ -62,6 +62,22 @@ export default function WebRTC() {
         }
     };
 
+    const stopMediaTracks = (stream) => {
+        stream.getTracks().forEach((track) => track.stop());
+    };
+
+    const endCall = () => {
+        if (peerRef.current) {
+            peerRef.current.close();
+            peerRef.current = null;
+        }
+        if (localStreamRef.current) {
+            stopMediaTracks(localStreamRef.current);
+            localStreamRef.current = null;
+        }
+        setVideoStarted(false);
+    };
+
     const createPeerConnection = () => {
         peerRef.current = new RTCPeerConnection({
             iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
@@ -303,7 +319,7 @@ export default function WebRTC() {
                                                         className={`bg-white text-white rounded`}
                                                         variant="ghost"
                                                         size="lg"
-                                                        onClick={() => setVideoStarted(false)}
+                                                        onClick={endCall}
                                                     >
                                                         <Image src="/images/phone-call-end.png" alt="video camera" height="20" width="20" />
                                                     </Button>
