@@ -9,8 +9,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Chat App",
-  description: "By Fiza Sayyed",
+  title: "SneakSpeak",
+  description: "Made with ❤️ by Fiza Sayyed",
 };
 
 export default function RootLayout({
