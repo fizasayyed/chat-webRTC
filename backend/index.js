@@ -5,7 +5,7 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:4000, https://sneakspeak.vercel.app",
+  origin: "https://sneakspeak.vercel.app",
   methods: ["GET", "POST"],
   allowedHeaders: "*",
   credentials: true
@@ -14,9 +14,11 @@ app.use(cors({
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: "http://localhost:4000, https://sneakspeak.vercel.app",
+    origin: "https://sneakspeak.vercel.app",
     methods: ["GET", "POST"],
-    allowedHeaders: "*",
+    headers: {
+      "Access-Control-Allow-Origin": "https://sneakspeak.vercel.app",
+    },
     credentials: true
   }
 });
