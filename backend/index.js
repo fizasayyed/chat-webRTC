@@ -5,7 +5,7 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors({
-  origin: "*",
+  origin: "https://sneakspeak.vercel.app",
   methods: ["GET", "POST"],
   allowedHeaders: "*",
   credentials: true
@@ -14,9 +14,10 @@ app.use(cors({
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: "*",
+    origin: "https://sneakspeak.vercel.app",
     methods: ["GET", "POST"],
     allowedHeaders: "*",
+    credentials: true
   }
 });
 

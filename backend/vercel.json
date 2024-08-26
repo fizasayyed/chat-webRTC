@@ -1,6 +1,6 @@
 {
 "version": 2,
-"name": "sneakspeak backend",
+"name": "sneakspeak-backend",
 "builds": [
 {
 "src": "index.js",
@@ -12,5 +12,13 @@
 "src": "/(.*)",
 "dest": "/index.js"
 }
-]
+],
+"headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "https://sneakspeak.vercel.app" }
+      ]
+    }
+  ]
 }
