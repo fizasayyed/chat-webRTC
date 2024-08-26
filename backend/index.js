@@ -19,7 +19,7 @@ const io = socketIO(server, {
     allowedHeaders: "*",
     credentials: true
   },
-  transports: ['websocket', 'polling'] // Ensure WebSocket is preferred
+  transports: ['websocket', 'polling']
 });
 
 io.on("connection", (socket) => {
