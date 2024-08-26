@@ -17,7 +17,7 @@ const io = socketIO(server, {
     origin: "https://sneakspeak.vercel.app",
     methods: ["GET", "POST"],
     allowedHeaders: "*",
-    credentials: true
+    credentials: true //Trying credentials true
   }
 });
 
