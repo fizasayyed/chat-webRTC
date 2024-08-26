@@ -17,9 +17,10 @@ const io = socketIO(server, {
     origin: "https://sneakspeak.vercel.app",
     methods: "*",
     allowedHeaders: "*",
-    credentials: true
+    credentials: true,
+    transports: ['websocket', 'polling']
   },
-  transports: ['websocket', 'polling']
+  allowEIO3: true
 });
 
 io.on("connection", (socket) => {

@@ -27,7 +27,16 @@ export default function WebRTC() {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
-        socketRef.current = io.connect('https://sneakspeak-backend.vercel.app');
+        socketRef.current = io.connect('https://sneakspeak-backend.vercel.app', {
+            transports: ['websocket', 'polling'],
+            withCredentials: true,
+            reconnectionAttempts: 5,
+            timeout: 20000
+        });
+
+        socketRef.current.on('connect', () => {
+            console.log('Connected to server with ID:', socketRef.current.id);
+        });
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
         socketRef.current.on('candidate', handleNewICECandidateMsg);
