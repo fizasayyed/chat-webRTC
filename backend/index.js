@@ -6,7 +6,7 @@ const app = express();
 
 app.use(cors({
   origin: "https://sneakspeak.vercel.app",
-  methods: ["GET", "POST"],
+  methods: "*",
   allowedHeaders: "*",
   credentials: true
 }));
@@ -15,10 +15,11 @@ const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
     origin: "https://sneakspeak.vercel.app",
-    methods: ["GET", "POST"],
+    methods: "*",
     allowedHeaders: "*",
     credentials: true
-  }
+  },
+  transports: ['websocket', 'polling'] // Ensure WebSocket is preferred
 });
 
 io.on("connection", (socket) => {
