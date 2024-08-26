@@ -6,7 +6,7 @@ const app = express();
 
 app.use(cors({
   origin: "*",
-  methods: ["GET", "POST"],
+  methods: "*",
   allowedHeaders: "*",
   credentials: true
 }));
@@ -15,8 +15,9 @@ const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST"],
+    methods: "*",
     allowedHeaders: "*",
+    credentials: true
   }
 });
 
