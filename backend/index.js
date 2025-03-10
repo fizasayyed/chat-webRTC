@@ -5,7 +5,10 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors({
-  origin: "https://sneakspeak.vercel.app",
+  origin: [
+    "https://sneakspeak.vercel.app",
+    "https://sneakspeak-backend.vercel.app"
+  ],
   methods: "*",
   allowedHeaders: "*",
   credentials: true
@@ -14,7 +17,10 @@ app.use(cors({
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: "https://sneakspeak.vercel.app",
+    origin: [
+      "https://sneakspeak.vercel.app",
+      "https://sneakspeak-backend.vercel.app"
+    ],
     methods: "*",
     allowedHeaders: "*",
     credentials: true,
@@ -57,9 +63,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const HOST = "localhost";
-const PORT = "4000";
-
-server.listen(PORT, HOST, () => {
-  console.log(`Server is listening on http://${HOST}:${PORT}`);
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => {
+  console.log(`Server ready on port ${PORT}`);
 });
