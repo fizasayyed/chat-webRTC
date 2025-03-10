@@ -10,19 +10,21 @@ var cors = require("cors");
 
 var app = express();
 app.use(cors({
-  origin: "http://localhost:4000, https://sneakspeak.vercel.app",
-  methods: ["GET", "POST"],
+  origin: ["https://sneakspeak.vercel.app", "https://sneakspeak-backend.vercel.app"],
+  methods: "*",
   allowedHeaders: "*",
   credentials: true
 }));
 var server = http.createServer(app);
 var io = socketIO(server, {
   cors: {
-    origin: "http://localhost:4000, https://sneakspeak.vercel.app",
-    methods: ["GET", "POST"],
+    origin: ["https://sneakspeak.vercel.app", "https://sneakspeak-backend.vercel.app"],
+    methods: "*",
     allowedHeaders: "*",
-    credentials: true
-  }
+    credentials: true,
+    transports: ['websocket', 'polling']
+  },
+  allowEIO3: true
 });
 io.on("connection", function (socket) {
   console.log("A user connected"); // WebRTC signaling events
@@ -53,8 +55,7 @@ io.on("connection", function (socket) {
     console.log("A user disconnected");
   });
 });
-var HOST = "localhost";
-var PORT = "4000";
-server.listen(PORT, HOST, function () {
-  console.log("Server is listening on http://".concat(HOST, ":").concat(PORT));
+var PORT = process.env.PORT || 4000;
+server.listen(PORT, function () {
+  console.log("Server ready on port ".concat(PORT));
 });

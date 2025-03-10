@@ -31,7 +31,8 @@ export default function WebRTC() {
             transports: ['websocket', 'polling'],
             withCredentials: true,
             reconnectionAttempts: 5,
-            timeout: 20000
+            timeout: 20000,
+            upgrade: false
         });
 
         socketRef.current.on('connect', () => {
