@@ -71,8 +71,15 @@ function WebRTC() {
     var localStreamRef = react_1.useRef(null);
     var messagesEndRef = react_1.useRef(null);
     react_1.useEffect(function () {
-        // socketRef.current = io.connect('https://sneakspeak-backend.vercel.app');
-        socketRef.current = io.connect('http://localhost:4000');
+        socketRef.current = io.connect('http://localhost:4000', {
+            transports: ['websocket', 'polling'],
+            withCredentials: true,
+            reconnectionAttempts: 5,
+            timeout: 20000
+        });
+        socketRef.current.on('connect', function () {
+            console.log('Connected to server with ID:', socketRef.current.id);
+        });
         socketRef.current.on('offer', handleReceiveOffer);
         socketRef.current.on('answer', handleReceiveAnswer);
         socketRef.current.on('candidate', handleNewICECandidateMsg);

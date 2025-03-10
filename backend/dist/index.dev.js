@@ -10,19 +10,21 @@ var cors = require("cors");
 
 var app = express();
 app.use(cors({
-  origin: "http://localhost:4000, https://sneakspeak.vercel.app",
-  methods: ["GET", "POST"],
+  origin: "https://sneakspeak.vercel.app",
+  methods: "*",
   allowedHeaders: "*",
   credentials: true
 }));
 var server = http.createServer(app);
 var io = socketIO(server, {
   cors: {
-    origin: "http://localhost:4000, https://sneakspeak.vercel.app",
-    methods: ["GET", "POST"],
+    origin: "http://localhost:3000",
+    methods: "*",
     allowedHeaders: "*",
-    credentials: true
-  }
+    credentials: true,
+    transports: ['websocket', 'polling']
+  },
+  allowEIO3: true
 });
 io.on("connection", function (socket) {
   console.log("A user connected"); // WebRTC signaling events

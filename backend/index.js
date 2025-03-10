@@ -14,7 +14,7 @@ app.use(cors({
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: "https://sneakspeak.vercel.app",
+    origin: "http://localhost:3000",
     methods: "*",
     allowedHeaders: "*",
     credentials: true,
